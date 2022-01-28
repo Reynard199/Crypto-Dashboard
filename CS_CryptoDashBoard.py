@@ -9,14 +9,7 @@ from PIL import Image
 
 st.set_page_config(layout = 'wide')
 
-col_1, col_2= st.columns(2)
-
-with col_1 :
-    image = Image.open("https://github.com/Reynard199/Shit-Crypto-Dashboard/blob/main/Photos/Pizza%20Angel%20Icon.jpg?raw=true")
-    st.image(image, use_column_width = True)
-
-with col_2 :
-    st.write("""
+st.write("""
         # Dan's Shitty Cryptocurrency DashBoard
         Visually show data on cryto (BTC-USD, DOGE-USD, ETH-USD) from **2016-01-01 to 2021-01-25**
         """)
