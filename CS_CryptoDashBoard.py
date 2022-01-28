@@ -12,11 +12,9 @@ st.set_page_config(layout = 'wide')
 col_1, col_2= st.columns(2)
 
 with col_1 :
-    # image = Image.open("https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/Photos/Pizza%20Angel%20Icon.jpg")
-    # st.image(image, use_column_width = True)
     st.image(
             "https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/Photos/Pizza%20Angel%20Icon.jpg",
-            width=400, # Manually Adjust the width of the image as per requirement
+            width=400
         )
 
 with col_2 :
