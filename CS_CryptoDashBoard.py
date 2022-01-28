@@ -42,7 +42,7 @@ def get_crypto_name(symbol):
 def get_data(symbol, start_date, end_date) :
     symbol = symbol.upper()
     if symbol == "BTC-USD" :
-        df = pd.read_csv("/Users/danreeynard/Documents/Crypto_Dash_Board/CSV Datafiles/BTC-USD.csv")
+        df = pd.read_csv("https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/CSV%20Datafiles/BTC-USD.csv?raw=true")
     elif symbol == "ETH-USD" :
         df = pd.read_csv("/Users/danreeynard/Documents/Crypto_Dash_Board/CSV Datafiles/ETH-USD.csv")
     elif symbol == 'DOGE-USD' :
