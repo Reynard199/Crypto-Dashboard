@@ -42,9 +42,9 @@ def get_crypto_name(symbol):
     if symbol == "BTC-USD" :
         return 'Bitcoin'
     if symbol == 'ETH-USD' :
-        return 'ETH-USDereum'
+        return 'Ethereum'
     if symbol == "DOGE-USD" :
-        return 'DOGE-USDcoin'
+        return 'Dogecoin'
     else :
         return "None"
     
@@ -53,9 +53,9 @@ def get_data(symbol, start_date, end_date) :
     if symbol == "BTC-USD" :
         df = pd.read_csv("https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/CSV%20Datafiles/BTC-USD.csv?raw=true")
     elif symbol == "ETH-USD" :
-        df = pd.read_csv("/Users/danreeynard/Documents/Crypto_Dash_Board/CSV Datafiles/ETH-USD.csv")
+        df = pd.read_csv("https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/CSV%20Datafiles/DOGE-USD.csv")
     elif symbol == 'DOGE-USD' :
-        df = pd.read_csv("/Users/danreeynard/Documents/Crypto_Dash_Board/CSV Datafiles/DOGE-USD.csv")
+        df = pd.read_csv("https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/CSV%20Datafiles/ETH-USD.csv")
     else :
         df = pd.DataFrame(columns = ['Date', 'Close', 'Open', 'High', 'Low', 'Adj Close', 'Volume'])
         
