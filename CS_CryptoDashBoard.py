@@ -1,20 +1,19 @@
 import streamlit as st
 import pandas as pd
-# import pandas_datareader as web
+import pandas_datareader as web
 import datetime
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 
-st.set_page_config(layout = 'wide', page_icon=Image.open("/Users/danreeynard/Downloads/General Nonsense/Crypto Dash Board/Photos/Pizza Angel Icon.jpg"), )
+st.set_page_config(layout = 'wide', page_icon=Image.open("/Users/danreeynard/Documents/Crypto_Dash_Board/Photos/Pizza Angel Icon.jpg"))
 
 col_1, col_2= st.columns(2)
 
 with col_1 :
-    image = Image.open("/Users/danreeynard/Downloads/General Nonsense/Crypto Dash Board/Photos/Pizza Angel Icon.jpg")
-    st.image(image,
-        use_column_width = True)
+    image = Image.open("/Users/danreeynard/Documents/Crypto_Dash_Board/Photos/Pizza Angel Icon.jpg")
+    st.image(image, use_column_width = True)
 
 with col_2 :
     st.write("""
@@ -22,7 +21,7 @@ with col_2 :
         Visually show data on cryto (BTC-USD, DOGE-USD, ETH-USD) from **2016-01-01 to 2021-01-25**
         """)
     
-st.sidebar.header("Control Panel")
+st.sidebar.header("*Control Panel*")
 
 def get_input():
     start_date = st.sidebar.text_input("Start Date", "2016-01-01")
@@ -50,11 +49,11 @@ def get_crypto_name(symbol):
 def get_data(symbol, start_date, end_date) :
     symbol = symbol.upper()
     if symbol == "BTC-USD" :
-        df = pd.read_csv("/Users/danreeynard/Downloads/General Nonsense/Crypto Dash Board/CSV Datafiles/BTC-USD.csv")
+        df = pd.read_csv("/Users/danreeynard/Documents/Crypto_Dash_Board/CSV Datafiles/BTC-USD.csv")
     elif symbol == "ETH-USD" :
-        df = pd.read_csv("/Users/danreeynard/Downloads/General Nonsense/Crypto Dash Board/CSV Datafiles/ETH-USD.csv")
+        df = pd.read_csv("/Users/danreeynard/Documents/Crypto_Dash_Board/CSV Datafiles/ETH-USD.csv")
     elif symbol == 'DOGE-USD' :
-        df = pd.read_csv("/Users/danreeynard/Downloads/General Nonsense/Crypto Dash Board/CSV Datafiles/DOGE-USD.csv")
+        df = pd.read_csv("/Users/danreeynard/Documents/Crypto_Dash_Board/CSV Datafiles/DOGE-USD.csv")
     else :
         df = pd.DataFrame(columns = ['Date', 'Close', 'Open', 'High', 'Low', 'Adj Close', 'Volume'])
         
