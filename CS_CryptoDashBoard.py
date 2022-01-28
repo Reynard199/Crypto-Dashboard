@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 
-st.set_page_config(layout = 'wide')
+st.set_page_config(layout = 'wide', initial_sidebar_state = 'collapsed')
 
 col_1, col_2= st.columns(2)
 
