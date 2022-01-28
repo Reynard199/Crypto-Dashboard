@@ -7,14 +7,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 
-st.set_page_config(layout = 'wide', initial_sidebar_state = 'collapsed')
+st.set_page_config(layout = 'wide', initial_sidebar_state = 'expanded', page_title = "Dan's Shitty Crypto Dashboard")
 
 col_1, col_2= st.columns(2)
 
 with col_1 :
     st.image(
             "https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/Photos/Pizza%20Angel%20Icon.jpg",
-            width=400
+            use_column_width = True,
         )
 
 with col_2 :
