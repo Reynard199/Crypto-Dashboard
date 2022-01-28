@@ -7,9 +7,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 
-st.set_page_config(layout = 'wide')
+st.set_page_config(layout = 'wide', page_icon=Image.open("https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/Photos/Pizza%20Angel%20Icon.jpg"))
 
-st.write("""
+col_1, col_2= st.columns(2)
+
+with col_1 :
+    image = Image.open("https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/Photos/Pizza%20Angel%20Icon.jpg")
+    st.image(image, use_column_width = True)
+
+with col_2 :
+    st.write("""
         # Dan's Shitty Cryptocurrency DashBoard
         Visually show data on cryto (BTC-USD, DOGE-USD, ETH-USD) from **2016-01-01 to 2021-01-25**
         """)
