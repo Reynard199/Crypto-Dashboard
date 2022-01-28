@@ -7,13 +7,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 
-st.set_page_config(layout = 'wide', page_icon=Image.open("https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/Photos/Pizza%20Angel%20Icon.jpg"))
+st.set_page_config(layout = 'wide')
 
 col_1, col_2= st.columns(2)
 
 with col_1 :
-    image = Image.open("https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/Photos/Pizza%20Angel%20Icon.jpg")
-    st.image(image, use_column_width = True)
+    # image = Image.open("https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/Photos/Pizza%20Angel%20Icon.jpg")
+    # st.image(image, use_column_width = True)
+    st.image(
+            "https://s3-us-west-2.amazonaws.com/uw-s3-cdn/wp-content/uploads/sites/6/2017/11/04133712/waterfall.jpg",
+            width=400, # Manually Adjust the width of the image as per requirement
+        )
 
 with col_2 :
     st.write("""
