@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 
-st.set_page_config(layout = 'wide', page_icon=Image.open("https://github.com/Reynard199/Shit-Crypto-Dashboard/blob/main/Photos/Pizza%20Angel%20Icon.jpg?raw=true"))
+st.set_page_config(layout = 'wide')
 
 col_1, col_2= st.columns(2)
 
