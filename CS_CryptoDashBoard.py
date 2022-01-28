@@ -7,12 +7,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 
-st.set_page_config(layout = 'wide', page_icon=Image.open("/Users/danreeynard/Documents/Crypto_Dash_Board/Photos/Pizza Angel Icon.jpg"))
+st.set_page_config(layout = 'wide', page_icon=Image.open("https://github.com/Reynard199/Shit-Crypto-Dashboard/blob/main/Photos/Pizza%20Angel%20Icon.jpg?raw=true"))
 
 col_1, col_2= st.columns(2)
 
 with col_1 :
-    image = Image.open("/Users/danreeynard/Documents/Crypto_Dash_Board/Photos/Pizza Angel Icon.jpg")
+    image = Image.open("https://github.com/Reynard199/Shit-Crypto-Dashboard/blob/main/Photos/Pizza%20Angel%20Icon.jpg?raw=true")
     st.image(image, use_column_width = True)
 
 with col_2 :
