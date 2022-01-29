@@ -13,8 +13,8 @@ col_1, col_2= st.columns(2)
 
 with col_1 :
     st.image(
-            "https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/Photos/Pizza%20Angel%20Icon.jpg",
-            use_column_width = True,
+        "https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/Photos/Pizza%20Angel%20Icon.jpg",
+        use_column_width = True,
         )
 
 with col_2 :
@@ -50,22 +50,27 @@ def get_crypto_name(symbol):
     
 def get_data(symbol, start_date, end_date) :
     symbol = symbol.upper()
-    if symbol == "BTC-USD" :
-        df = pd.read_csv("https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/CSV%20Datafiles/BTC-USD.csv?raw=true")
-    elif symbol == "ETH-USD" :
-        df = pd.read_csv("https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/CSV%20Datafiles/DOGE-USD.csv")
-    elif symbol == 'DOGE-USD' :
-        df = pd.read_csv("https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/CSV%20Datafiles/ETH-USD.csv")
-    else :
-        df = pd.DataFrame(columns = ['Date', 'Close', 'Open', 'High', 'Low', 'Adj Close', 'Volume'])
-        
+    
     start_date = pd.to_datetime(start_date)
     end_date = pd.to_datetime(end_date)
     
-    df['Date'] = pd.to_datetime(df['Date'])
+    if symbol == "BTC-USD" :
+        df = web.DataReader(name = symbol, data_source = 'yahoo', start = start_date, end = end_date)
+        # df = pd.read_csv("https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/CSV%20Datafiles/BTC-USD.csv?raw=true")
+    elif symbol == "ETH-USD" :
+        df = web.DataReader(name = symbol, data_source = 'yahoo', start = start_date, end = end_date)
+        # df = pd.read_csv("https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/CSV%20Datafiles/DOGE-USD.csv")
+    elif symbol == 'DOGE-USD' :
+        df = web.DataReader(name = symbol, data_source = 'yahoo', start = start_date, end = end_date)
+        # df = pd.read_csv("https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/CSV%20Datafiles/ETH-USD.csv")
+    else :
+        df = pd.DataFrame(columns = ['Date', 'Close', 'Open', 'High', 'Low', 'Adj Close', 'Volume'])
+    
+    df['Date'] = df.index
+    #df['Date'] = pd.to_datetime(df['Date'])
     
     df['Returns'] = (df['Close'] / df["Close"].iloc[0] - 1) * 100
-    
+
     df = df.set_index(pd.DatetimeIndex(df['Date'].values))
     
     return df.loc[start_date:end_date]
