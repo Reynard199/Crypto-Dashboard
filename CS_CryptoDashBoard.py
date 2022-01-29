@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import pandas_datareader as web
+from pandas_datareader import data as web
 import datetime
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
