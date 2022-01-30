@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from pandas_datareader import data as web
+from datetime import timedelta
 import datetime
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
@@ -73,10 +74,53 @@ def get_data(symbol, start_date, end_date) :
 
     df = df.set_index(pd.DatetimeIndex(df['Date'].values))
     
-    return df.loc[start_date:end_date]
+    return df.loc[start_date : end_date]
+
+def moving_averages_2(moving_averages):
+    
+    global trading_df
+    
+    df["SMA"] = df["Close"].rolling(window = moving_averages).mean()
+    df["EWM"] = df["Close"].ewm(span = moving_averages).mean()
+        
+    df['Signal'] = np.where(df['SMA'] < df['EWM'], 1, 0)
+    df['Position'] = df["Signal"].diff()
+    df['Buy'] = np.where(df['Position'] == 1, df['Close'], np.NAN)
+    df['Sell'] = np.where(df['Position'] == -1, df['Close'], np.NAN)
+    
+    profit = round(sum(np.array(-df[df['Position'] > 0]['Buy'])) + sum(np.array(df[df['Position'] < 0]['Sell'])), 3)
+
+    fig = plt.figure(figsize = (20,10))
+    
+    df[['Close', 'SMA', 'EWM']].plot()
+    plt.scatter(df.index, 
+                df['Buy'],
+                label = 'Buy Signal',
+                marker = '^',
+                color = 'green')
+    plt.scatter(df.index, 
+                df['Sell'],
+                label = 'Sell Signal',
+                marker = 'v',
+                color = 'red')
+    plt.xlabel('Date', fontsize = 20)
+    plt.ylabel('Cumulative Returns and the Rolling SMA and EWM (R / $)', fontsize = 20)
+    plt.title('Cumulative Return and the Rolling ' + str(moving_averages) + ' Day Average of Bitcoin in USD = ' + str(profit) + "% Return",
+              fontsize = 24, color = 'red')
+    plt.xticks(fontsize = 16)
+    plt.yticks(fontsize = 16)
+    plt.legend(fontsize = 20)
+    plt.show()
+    
+    st.pyplot(fig)
+    
+    trading_df = df
+    
+    return trading_df
 
 start, end, symbol, moving_averages = get_input()
 df = get_data(symbol, start, end)
+
 crypto_name = get_crypto_name(symbol)
 
 fig = go.Figure(
@@ -90,60 +134,6 @@ fig = go.Figure(
         decreasing_line_color = 'red'
         )]
     )
-
-def moving_averages_plot(moving_averages = 14):
-        
-    global share_data_returns_df
-    global price_df
-    price_df = pd.DataFrame()
-    
-    share_data_returns = df['Returns']
-    share_data_sma = share_data_returns.rolling(window = moving_averages).mean()
-    share_data_ewm = share_data_returns.ewm(span = moving_averages).mean()
-    share_data_returns_df = pd.DataFrame({'Name' : str(moving_averages),
-                    'Price' : share_data_returns[moving_averages],
-                    'SMA' : share_data_sma[moving_averages],
-                    'EWM' : share_data_ewm[moving_averages]})
-        
-    share_data_returns_df['Signal'] = np.where(share_data_returns_df['SMA'] < share_data_returns_df['EWM'], 1, 0)
-    share_data_returns_df['Position'] = share_data_returns_df["Signal"].diff()
-    share_data_returns_df['Buy'] = np.where(share_data_returns_df['Position'] == 1, share_data_returns_df['Price'], np.NAN)
-    share_data_returns_df['Sell'] = np.where(share_data_returns_df['Position'] == -1, share_data_returns_df['Price'], np.NAN)
-        
-    profit = round(sum(np.array(-share_data_returns_df[share_data_returns_df['Position'] > 0]['Buy'])) + sum(np.array(share_data_returns_df[share_data_returns_df['Position'] < 0]['Sell'])), 3)
-        
-#   profit = str(round(sum(np.array(-share_data_returns_df[share_data_returns_df['Position'] > 0]['Buy']) 
-#                                      + np.array(share_data_returns_df[share_data_returns_df['Position'] < 0]['Sell']))))
-
-    fig = plt.figure(figsize = (20,10))
-    
-    share_data_returns_df[['Price', 'SMA', 'EWM']].plot()
-    plt.scatter(share_data_returns_df.index, 
-                share_data_returns_df['Buy'],
-                label = 'Buy Signal',
-                marker = '^',
-                color = 'green')
-    plt.scatter(share_data_returns_df.index, 
-                share_data_returns_df['Sell'],
-                label = 'Sell Signal',
-                marker = 'v',
-                color = 'red')
-    plt.xlabel('Date', fontsize = 20)
-    plt.ylabel('Cumulative Returns and the Rolling SMA and EWM (R / $)', fontsize = 20)
-    plt.title('Cumulative Return and the Rolling ' + str(moving_averages) + ' Day Average of Bitcoin in USD = ' + str(profit) + "% Return",
-              fontsize = 24, color = 'red')
-    plt.xticks(fontsize = 16)
-    plt.yticks(fontsize = 16)
-    plt.legend(fontsize = 20)
-    plt.autoscale()
-    plt.show()
-    st.balloons()
-    st.pyplot(fig)
-    
-    price_df = price_df.append(share_data_returns_df)
-    
-    print (price_df)
-    return (share_data_returns_df)
 
 st.header(crypto_name + ' Data')
 st.dataframe(df.sort_values(by = 'Date', ascending=False).drop(columns = 'Date'))
@@ -162,4 +152,7 @@ st.bar_chart(df['Volume'])
 
 st.header(crypto_name + ' Candle Stick')
 st.plotly_chart(fig, use_container_width=True)
+
+st.header(crypto_name + ' : Moving Averages Trading Strategies')
+moving_averages_2(moving_averages)
     
