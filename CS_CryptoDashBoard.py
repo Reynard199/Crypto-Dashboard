@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 
-st.set_page_config(layout = 'wide', initial_sidebar_state = 'expanded', page_title = "Dan's Shitty Crypto Dashboard", font = 'bradley Hand')
+st.set_page_config(layout = 'wide', initial_sidebar_state = 'expanded', page_title = "Dan's Shitty Crypto Dashboard")
 
 col_1, col_2= st.columns(2)
 
