@@ -141,19 +141,17 @@ def trading(moving_averages) :
     fig.add_trace(go.Scatter(x = df['Date'], y = df['Close'], mode = 'lines', line=dict(color='royalblue', width=2), name = 'Closing Price'))
     fig.add_trace(go.Scatter(x = df['Date'], y = trading_df['Buy'], mode = 'markers', name = 'Buy', marker=dict(color='green', size =7)))
     fig.add_trace(go.Scatter(x = df['Date'], y = trading_df['Sell'], mode = 'markers', name = 'Sell', marker=dict(color='red', size =7)))
-    fig.update_layout(autosize = False,
-            width = 1200, height = 600,
+    fig.update_layout(autosize = True,
+            # width = 1200, height = 600,
             title = ("Moving Simple and Exponential Trading Strategy Applied Over " + str(moving_averages) + " Days == $" + str(profit) + " Return between the dates " + str(start) + ' and ' + str(end)),
             xaxis_title = ("Date Range between " + str(start) + ' and ' + str(end)),
             yaxis_title = "Price in USD",
             legend_title = "Legend",
             title_font=dict(
                 family = "Bradley Hand",
-                size = 17,
-                color = "RebeccaPurple"),
+                size = 17),
             font = dict(family = "Times New Roman",
-                    size = 16,
-                    color = "RebeccaPurple")
+                    size = 16)
             )
     st.plotly_chart(fig)
     
