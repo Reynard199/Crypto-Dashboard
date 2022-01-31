@@ -168,7 +168,7 @@ def trading(moving_averages) :
             legend_title = "Legend",
             title_font=dict(
                 family = "Bradley Hand",
-                size = 20),
+                size = 24),
             font = dict(family = "Bradley Hand",
                     size = 16),
             paper_bgcolor='rgba(0,0,0,0)',
