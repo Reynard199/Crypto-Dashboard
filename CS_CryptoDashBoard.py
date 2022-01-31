@@ -4,11 +4,12 @@ from pandas_datareader import data as web
 from datetime import timedelta
 import datetime
 import plotly.graph_objects as go
+import plotly.express as px
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 
-st.set_page_config(layout = 'wide', initial_sidebar_state = 'expanded', page_title = "Dan's Shitty Crypto Dashboard")
+st.set_page_config(layout = 'wide', initial_sidebar_state = 'expanded', page_title = "Dan's Shitty Crypto Dashboard", font = 'bradley Hand')
 
 col_1, col_2= st.columns(2)
 
@@ -76,47 +77,6 @@ def get_data(symbol, start_date, end_date) :
     
     return df.loc[start_date : end_date]
 
-def moving_averages_2(moving_averages):
-    
-    global trading_df
-    
-    df["SMA"] = df["Close"].rolling(window = moving_averages).mean()
-    df["EWM"] = df["Close"].ewm(span = moving_averages).mean()
-        
-    df['Signal'] = np.where(df['SMA'] < df['EWM'], 1, 0)
-    df['Position'] = df["Signal"].diff()
-    df['Buy'] = np.where(df['Position'] == 1, df['Close'], np.NAN)
-    df['Sell'] = np.where(df['Position'] == -1, df['Close'], np.NAN)
-    
-    profit = round(sum(np.array(-df[df['Position'] > 0]['Buy'])) + sum(np.array(df[df['Position'] < 0]['Sell'])), 3)
-
-    fig = plt.figure(figsize = (20,10))
-    
-    df[['Close', 'SMA', 'EWM']].plot()
-    plt.scatter(df.index, 
-                df['Buy'],
-                label = 'Buy Signal',
-                marker = '^',
-                color = 'green')
-    plt.scatter(df.index, 
-                df['Sell'],
-                label = 'Sell Signal',
-                marker = 'v',
-                color = 'red')
-    plt.xlabel('Date', fontsize = 20)
-    plt.ylabel('Cumulative Returns and the Rolling SMA and EWM (R / $)', fontsize = 20)
-    plt.title('Cumulative Return and the Rolling ' + str(moving_averages) + ' Day Average of Bitcoin in USD = ' + str(profit) + "% Return",
-              fontsize = 24, color = 'red')
-    plt.xticks(fontsize = 16)
-    plt.yticks(fontsize = 16)
-    plt.legend(fontsize = 20)
-    plt.show()
-    
-    st.pyplot(fig)
-    
-    trading_df = df
-    
-    return trading_df
 
 start, end, symbol, moving_averages = get_input()
 df = get_data(symbol, start, end)
@@ -132,8 +92,7 @@ fig = go.Figure(
         low = df['Low'],
         increasing_line_color = 'green',
         decreasing_line_color = 'red'
-        )]
-    )
+        )])
 
 st.header(crypto_name + ' Data')
 st.dataframe(df.sort_values(by = 'Date', ascending=False).drop(columns = 'Date'))
@@ -154,5 +113,53 @@ st.header(crypto_name + ' Candle Stick')
 st.plotly_chart(fig, use_container_width=True)
 
 st.header(crypto_name + ' : Moving Averages Trading Strategies')
-moving_averages_2(moving_averages)
+# st.line_chart(trading_df['Adj Close'])
+# st.pyplot(moving_averages_2(moving_averages))
+
+def trading(moving_averages) : 
+    trading_df = pd.DataFrame()
+    
+    trading_df['Close'] = df['Close']
+    trading_df["SMA"] = df["Close"].rolling(window = moving_averages).mean()
+    trading_df["EWM"] = df["Close"].ewm(span = moving_averages).mean()
+        
+    trading_df['Signal'] = np.where(trading_df['SMA'] < trading_df['EWM'], 1, 0)
+    trading_df['Position'] = trading_df["Signal"].diff()
+    trading_df['Buy'] = np.where(trading_df['Position'] == 1, trading_df['Close'], np.NAN)
+    trading_df['Sell'] = np.where(trading_df['Position'] == -1, trading_df['Close'], np.NAN)
+    
+    
+    return_profit = df['Returns']
+    return_profit['Position'] = trading_df['Position']
+    return_profit['Buy'] = trading_df['Buy']
+    return_profit['Sell'] = trading_df['Sell']
+    
+    # rreturn_profit_df = round(sum(np.array(-return_profit[return_profit['Position'] > 0]['Buy'])) + sum(np.array(return_profit[trading_df['Position'] < 0]['Sell'])), 3)
+    profit = round(sum(np.array(-trading_df[trading_df['Position'] > 0]['Buy'])) + sum(np.array(trading_df[trading_df['Position'] < 0]['Sell'])), 3)
+    
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x = df['Date'], y = df['Close'], mode = 'lines', line=dict(color='royalblue', width=2), name = 'Closing Price'))
+    fig.add_trace(go.Scatter(x = df['Date'], y = trading_df['Buy'], mode = 'markers', name = 'Buy', marker=dict(color='green', size =7)))
+    fig.add_trace(go.Scatter(x = df['Date'], y = trading_df['Sell'], mode = 'markers', name = 'Sell', marker=dict(color='red', size =7)))
+    fig.update_layout(autosize = False,
+            width = 1200, height = 600,
+            title = ("Moving Simple and Exponential Trading Strategy Applied Over " + str(moving_averages) + " Days == $" + str(profit) + " Return between the dates " + str(start) + ' and ' + str(end)),
+            xaxis_title = ("Date Range between " + str(start) + ' and ' + str(end)),
+            yaxis_title = "Price in USD",
+            legend_title = "Legend",
+            title_font=dict(
+                family = "Bradley Hand",
+                size = 17,
+                color = "RebeccaPurple"),
+            font = dict(family = "Times New Roman",
+                    size = 16,
+                    color = "RebeccaPurple")
+            )
+    st.plotly_chart(fig)
+    
+    return trading_df, profit
+
+trading_df, profit = trading(moving_averages)
+
+
     
