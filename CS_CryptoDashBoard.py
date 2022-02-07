@@ -184,7 +184,7 @@ with st.container() :
                 # height = 600,
                 title = ("Moving Simple and Exponential Trading Strategy Applied Over " \
                          + str(moving_averages) + " Days = $" + str(profit) + \
-                             " Return with a Open Position of : $" + str(round(open_position, 2)) + "<br> [between the dates " + str(datetime.date.strftime(start, '%d %B %Y')) \
+                             " Return<br>With a Open Position of : $" + str(round(open_position, 2)) + " after a Initial Investemnt of $" + str(round(trading_df[trading_df["Buy"] > 0]['Buy'][0],3)) + "<br>[between the dates " + str(datetime.date.strftime(start, '%d %B %Y')) \
                                  + ' and ' + str(datetime.date.strftime(end, '%d %B %Y')) + ']'),
                 title_x = 0.5,
                 xaxis_title = ("Date Range between " + str(start) + ' and ' + str(end)),
