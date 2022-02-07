@@ -8,6 +8,7 @@ import plotly.express as px
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
+# import streamlit.components.v1 as components
 
 st.set_page_config(layout = 'wide', initial_sidebar_state = 'expanded', page_title = "Dan's Shitty Crypto Dashboard")
 
@@ -22,14 +23,15 @@ with col_1 :
 with col_2 :
     st.write("""
         # Dan's Shitty Cryptocurrency DashBoard
-        Visually show data on cryto (BTC-USD, DOGE-USD, ETH-USD) from **2016-01-01 to 2021-01-25**
+        **Visually show data on cryto (BTC-USD, DOGE-USD, ETH-USD)**
         """)
     
 st.sidebar.header("*Control Panel*")
 
 def get_input():
-    start_date = st.sidebar.text_input("Start Date", "2016-01-01")
-    end_date = st.sidebar.text_input("End Date", datetime.date.today())
+    form = st.sidebar.form('Submit_button')
+    start_date = st.sidebar.date_input("Start Date", value = datetime.date(2016,1,1), max_value = (datetime.date.today() - datetime.timedelta(days = 1)))
+    end_date = st.sidebar.date_input("End Date", value = datetime.date.today(), max_value = datetime.date.today())
     # crypto_symbol = st.sidebar.text_input("Crypto Symbol", "BTC-USD")
     crypto_symbol = st.sidebar.selectbox('Crypto Coin', options = ['BTC-USD', 'DOGE-USD', 'ETH-USD'])
     moving_averages = st.sidebar.slider(label = 'Moving Averages Time Period',
@@ -37,6 +39,8 @@ def get_input():
                     max_value=(120),
                     value = (14),
                     step=(1))
+    submit_button = form.form_submit_button('Submit')
+    
     return start_date, end_date, crypto_symbol, moving_averages
 
 def get_crypto_name(symbol):
@@ -49,7 +53,7 @@ def get_crypto_name(symbol):
         return 'Dogecoin'
     else :
         return "None"
-    
+
 def get_data(symbol, start_date, end_date) :
     symbol = symbol.upper()
     
@@ -99,39 +103,46 @@ fig = go.Figure(
 
 st.markdown("***")
 
-st.header(crypto_name + ' Data')
+st.header(crypto_name + ' Data for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
 st.dataframe(df.sort_values(by = 'Date', ascending=False).drop(columns = 'Date'))
 
 st.markdown("***")
 
-st.header(crypto_name + ' Closing Price Statistics')
+st.header(crypto_name + ' Closing Price Statistics for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
 st.dataframe(df.groupby(df.Date.dt.year).Close.describe().transpose(), width = 1200)
 
 st.markdown("***")
 
-st.header(crypto_name + ' Returns Statistics')
+st.header(crypto_name + ' Returns Statistics for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
 st.dataframe(df.groupby(df.Date.dt.year).Returns.describe().transpose(), width = 2000)
 
 st.markdown("***")
 
-st.header(crypto_name + ' Close Price')
+st.header(crypto_name + ' Close Price for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
 st.line_chart(df['Close'])
 
 st.markdown("***")
 
-st.header(crypto_name + ' Volume')
+st.header(crypto_name + ' Volume for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
 st.bar_chart(df['Volume'])
 
 st.markdown("***")
 
-st.header(crypto_name + ' Candle Stick')
+st.header(crypto_name + " CandleStick Chart for " + str(datetime.date.strftime(start, '%d %B %Y') + " to " + str(datetime.date.strftime(end, '%d %B %Y'))))
+# bootstrap 4 collapse example
+# components.html(
+#    """
+#    <div style="text-align: center"> Test </div>
+#    """,
+# )
 candle_stick = st.plotly_chart(fig, use_container_width=True)
 
 st.markdown("***")
 st.header(crypto_name + ' : Moving Averages Trading Strategies')
-st.markdown("A SMA-EWM Trading Strategy has simple underlying principles. When the EWM (Exponential Weighted Moving Average) crosses the SMA (Simple Moving Average), " + str(crypto_name) + " is bought at the crossover price, indicated in green. The opposite action is taken if the EWM crosses the SMA, indicated in red. The number of periods that the weighted averages are calculated over is controlled by the 'Moving Averages Time Period' slider, in this case being " + str(moving_averages) + " days.")
+explanation = "<p style='font-family:Times New Roman; font-size: 16px;'>A SMA-EWM Trading Strategy has simple underlying principles. When the EWM (Exponential Weighted Moving Average) crosses the SMA (Simple Moving Average), " + str(crypto_name) + " is bought at the crossover price, indicated in green. The opposite action is taken if the EWM crosses the SMA, indicated in red. The number of periods that the weighted averages are calculated over is controlled by the 'Moving Averages Time Period' slider, in this case being " + str(moving_averages) + " days.</p>"
+st.markdown(explanation, unsafe_allow_html=True)
 st.markdown("    ")
-st.markdown("General Note - This trading strategy is rarely effective (Thanks Weak Efficient Market Hypothesis), but it was certainly interesting to code")
+st.markdown("<p style='font-family:Times New Roman; font-size: 16px;'>General Note - This trading strategy is rarely effective (Thanks Weak Efficient Market Hypothesis), but it was certainly interesting to code.<p>", unsafe_allow_html = True)
 st.markdown("***")
 
 def trading(moving_averages) : 
@@ -152,7 +163,7 @@ def trading(moving_averages) :
     return_profit['Buy'] = trading_df['Buy']
     return_profit['Sell'] = trading_df['Sell']
     
-    # rreturn_profit_df = round(sum(np.array(-return_profit[return_profit['Position'] > 0]['Buy'])) + sum(np.array(return_profit[trading_df['Position'] < 0]['Sell'])), 3)
+    # return_profit_df = round(sum(np.array(-return_profit[return_profit['Position'] > 0]['Buy'])) + sum(np.array(return_profit[trading_df['Position'] < 0]['Sell'])), 3)
     profit = round(sum(np.array(-trading_df[trading_df['Position'] > 0]['Buy'])) + sum(np.array(trading_df[trading_df['Position'] < 0]['Sell'])), 3)
     
     fig = go.Figure()
@@ -161,15 +172,16 @@ def trading(moving_averages) :
     fig.add_trace(go.Scatter(x = df['Date'], y = trading_df['Sell'], mode = 'markers', name = 'Sell', marker=dict(color='red', size =7)))
     fig.update_layout(autosize = False,
             width = 1200, height = 600,
+            title = ("Moving Simple and Exponential Trading Strategy Applied Over " + str(moving_averages) + " Days = $" + str(profit) + " Return <br> [between the dates " + str(datetime.date.strftime(start, '%d %B %Y')) + ' and ' + str(datetime.date.strftime(end, '%d %B %Y')) + ']'),
             title_x = 0.5,
-            title = ("Moving Simple and Exponential Trading Strategy Applied Over " + str(moving_averages) + " Days = $" + str(profit) +" Return <br> [between the dates " + str(start) + ' and ' + str(end) + "]"),
             xaxis_title = ("Date Range between " + str(start) + ' and ' + str(end)),
             yaxis_title = "Price in USD",
             legend_title = "Legend",
             title_font=dict(
-                family = "Bradley Hand",
-                size = 24),
-            font = dict(family = "Bradley Hand",
+                family = "New Times Roman",
+                size = 22,
+                ),
+            font = dict(family = "New Times Roman",
                     size = 16),
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)'
@@ -180,6 +192,7 @@ def trading(moving_averages) :
     return trading_df, profit
 
 trading_df, profit = trading(moving_averages)
+
 
 
     
