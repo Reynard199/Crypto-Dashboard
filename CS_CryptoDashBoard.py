@@ -139,59 +139,66 @@ candle_stick = st.plotly_chart(fig, use_container_width=True)
 
 st.markdown("***")
 st.header(crypto_name + ' : Moving Averages Trading Strategies')
-explanation = "<p style='font-family:Times New Roman; font-size: 16px;'>A SMA-EWM Trading Strategy has simple underlying principles. When the EWM (Exponential Weighted Moving Average) crosses the SMA (Simple Moving Average), " + str(crypto_name) + " is bought at the crossover price, indicated in green. The opposite action is taken if the EWM crosses the SMA, indicated in red. The number of periods that the weighted averages are calculated over is controlled by the 'Moving Averages Time Period' slider, in this case being " + str(moving_averages) + " days.</p>"
-st.markdown(explanation, unsafe_allow_html=True)
-st.markdown("    ")
-st.markdown("<p style='font-family:Times New Roman; font-size: 16px;'>General Note - This trading strategy is rarely effective (Thanks Weak Efficient Market Hypothesis), but it was certainly interesting to code.<p>", unsafe_allow_html = True)
+with st.expander("Click to Expand Explanation of Moving Averages Trading Strategy", expanded = True) :
+    explanation = "<p style='font-family:Times New Roman; font-size: 16px;'>A SMA-EWM Trading Strategy has simple underlying principles. When the EWM (Exponential Weighted Moving Average) crosses the SMA (Simple Moving Average), " + str(crypto_name) + " is bought at the crossover price, indicated in green. The opposite action is taken if the EWM crosses the SMA, indicated in red. The number of periods that the weighted averages are calculated over is controlled by the 'Moving Averages Time Period' slider, in this case being " + str(moving_averages) + " days.</p>"
+    st.write(explanation, unsafe_allow_html=True)
+    st.markdown("    ")
+    st.markdown("<p style='font-family:Times New Roman; font-size: 16px;'>General Note - This trading strategy is rarely effective (Thanks Weak Efficient Market Hypothesis), but it was certainly interesting to code.<p>", unsafe_allow_html = True)
 st.markdown("***")
 
-def trading(moving_averages) : 
-    trading_df = pd.DataFrame()
+with st.container() :
     
-    trading_df['Close'] = df['Close']
-    trading_df["SMA"] = df["Close"].rolling(window = moving_averages).mean()
-    trading_df["EWM"] = df["Close"].ewm(span = moving_averages).mean()
+    def trading(moving_averages) : 
+        trading_df = pd.DataFrame()
         
-    trading_df['Signal'] = np.where(trading_df['SMA'] < trading_df['EWM'], 1, 0)
-    trading_df['Position'] = trading_df["Signal"].diff()
-    trading_df['Buy'] = np.where(trading_df['Position'] == 1, trading_df['Close'], np.NAN)
-    trading_df['Sell'] = np.where(trading_df['Position'] == -1, trading_df['Close'], np.NAN)
-    
-    
-    return_profit = df['Returns']
-    return_profit['Position'] = trading_df['Position']
-    return_profit['Buy'] = trading_df['Buy']
-    return_profit['Sell'] = trading_df['Sell']
-    
-    # return_profit_df = round(sum(np.array(-return_profit[return_profit['Position'] > 0]['Buy'])) + sum(np.array(return_profit[trading_df['Position'] < 0]['Sell'])), 3)
-    profit = round(sum(np.array(-trading_df[trading_df['Position'] > 0]['Buy'])) + sum(np.array(trading_df[trading_df['Position'] < 0]['Sell'])), 3)
-    
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x = df['Date'], y = df['Close'], mode = 'lines', line=dict(color='royalblue', width=2), name = 'Closing Price'))
-    fig.add_trace(go.Scatter(x = df['Date'], y = trading_df['Buy'], mode = 'markers', name = 'Buy', marker=dict(color='green', size =7)))
-    fig.add_trace(go.Scatter(x = df['Date'], y = trading_df['Sell'], mode = 'markers', name = 'Sell', marker=dict(color='red', size =7)))
-    fig.update_layout(autosize = False,
-            width = 1200, height = 600,
-            title = ("Moving Simple and Exponential Trading Strategy Applied Over " + str(moving_averages) + " Days = $" + str(profit) + " Return <br> [between the dates " + str(datetime.date.strftime(start, '%d %B %Y')) + ' and ' + str(datetime.date.strftime(end, '%d %B %Y')) + ']'),
-            title_x = 0.5,
-            xaxis_title = ("Date Range between " + str(start) + ' and ' + str(end)),
-            yaxis_title = "Price in USD",
-            legend_title = "Legend",
-            title_font=dict(
-                family = "New Times Roman",
-                size = 22,
-                ),
-            font = dict(family = "New Times Roman",
-                    size = 16),
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)'
-            )
-    st.plotly_chart(fig)
-    st.markdown("***")
-    
-    return trading_df, profit
+        trading_df['Close'] = df['Close']
+        trading_df["SMA"] = df["Close"].rolling(window = moving_averages).mean()
+        trading_df["EWM"] = df["Close"].ewm(span = moving_averages).mean()
+            
+        trading_df['Signal'] = np.where(trading_df['SMA'] < trading_df['EWM'], 1, 0)
+        trading_df['Position'] = trading_df["Signal"].diff()
+        trading_df['Buy'] = np.where(trading_df['Position'] == 1, trading_df['Close'], np.NAN)
+        trading_df['Sell'] = np.where(trading_df['Position'] == -1, trading_df['Close'], np.NAN)
+        
+        return_profit = df['Returns']
+        return_profit['Position'] = trading_df['Position']
+        return_profit['Buy'] = trading_df['Buy']
+        return_profit['Sell'] = trading_df['Sell']
+        
+        if return_profit['Buy'].count() > return_profit['Sell'].count() : 
+            open_position = trading_df['Close'][-1] - trading_df[trading_df['Buy'] > 0]['Buy'][-1]
+        else :
+            open_position = 0
+            
+        # return_profit_df = round(sum(np.array(-return_profit[return_profit['Position'] > 0]['Buy'])) + sum(np.array(return_profit[trading_df['Position'] < 0]['Sell'])), 3)
+        profit = round(sum(np.array(-trading_df[trading_df['Position'] > 0]['Buy'])) + sum(np.array(trading_df[trading_df['Position'] < 0]['Sell'])) + open_position, 3)
+        
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x = df['Date'], y = df['Close'], mode = 'lines', line=dict(color='royalblue', width=2), name = 'Closing Price'))
+        fig.add_trace(go.Scatter(x = df['Date'], y = trading_df['Buy'], mode = 'markers', name = 'Buy', marker=dict(color='green', size =7)))
+        fig.add_trace(go.Scatter(x = df['Date'], y = trading_df['Sell'], mode = 'markers', name = 'Sell', marker=dict(color='red', size =7)))
+        fig.update_layout(autosize = True,
+                # width = 1400, height = 600,
+                title = ("Moving Simple and Exponential Trading Strategy Applied Over " + str(moving_averages) + " Days = $" + str(profit) + " Return <br> [between the dates " + str(datetime.date.strftime(start, '%d %B %Y')) + ' and ' + str(datetime.date.strftime(end, '%d %B %Y')) + ']'),
+                title_x = 0.5,
+                xaxis_title = ("Date Range between " + str(start) + ' and ' + str(end)),
+                yaxis_title = "Price in USD",
+                legend_title = "Legend",
+                title_font=dict(
+                    family = "New Times Roman",
+                    size = 22,
+                    ),
+                font = dict(family = "New Times Roman",
+                        size = 16),
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)'
+                )
+        st.plotly_chart(fig)
+        st.markdown("***")
+        
+        return trading_df, profit, open_position, fig
 
-trading_df, profit = trading(moving_averages)
+trading_df, profit, open_position, fig = trading(moving_averages)
 
 
 
