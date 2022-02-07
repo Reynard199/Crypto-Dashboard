@@ -179,14 +179,7 @@ with st.container() :
         fig.add_trace(go.Scatter(x = df['Date'], y = df['Close'], mode = 'lines', line=dict(color='royalblue', width=2), name = 'Closing Price'))
         fig.add_trace(go.Scatter(x = df['Date'], y = trading_df['Buy'], mode = 'markers', name = 'Buy', marker=dict(color='green', size =7)))
         fig.add_trace(go.Scatter(x = df['Date'], y = trading_df['Sell'], mode = 'markers', name = 'Sell', marker=dict(color='red', size =7)))
-        fig.update_layout(# autosize = True,
-                # width = 1200,
-                # height = 600,
-                title = ("Moving Simple and Exponential Trading Strategy Applied Over " \
-                         + str(moving_averages) + " Days = $" + str(profit) + \
-                             " Return<br>With a Open Position of : $" + str(round(open_position, 2)) + " after a Initial Investemnt of $" + str(round(trading_df[trading_df["Buy"] > 0]['Buy'][0],3)) + "<br>[between the dates " + str(datetime.date.strftime(start, '%d %B %Y')) \
-                                 + ' and ' + str(datetime.date.strftime(end, '%d %B %Y')) + ']'),
-                title_x = 0.5,
+        fig.update_layout(title_x = 0.5,
                 xaxis_title = ("Date Range between " + str(start) + ' and ' + str(end)),
                 yaxis_title = "Price in USD",
                 legend_title = "Legend",
@@ -199,6 +192,11 @@ with st.container() :
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)'
                 )
+        
+        st.subheader("Moving Simple and Exponential Trading Strategy Applied Over " \
+                         + str(moving_averages) + " Days = $" + str(profit) + \
+                             " Return<br>With a Open Position of : $" + str(round(open_position, 2)) + " after a Initial Investemnt of $" + str(round(trading_df[trading_df["Buy"] > 0]['Buy'][0],3)) + "<br>[between the dates " + str(datetime.date.strftime(start, '%d %B %Y')) \
+                                 + ' and ' + str(datetime.date.strftime(end, '%d %B %Y')) + ']')
         st.plotly_chart(fig, use_container_width = True)
         
         with st.expander('Click to Reveal the Transaction Data', expanded = True) :
