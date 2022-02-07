@@ -146,6 +146,7 @@ with st.expander("Click to Expand Explanation of Moving Averages Trading Strateg
     st.write(explanation, unsafe_allow_html=True)
     st.markdown("    ")
     st.markdown("<p style='font-family:Times New Roman; font-size: 16px;'>General Note - This trading strategy is rarely effective (Thanks Weak Efficient Market Hypothesis), but it was certainly interesting to code.<p>", unsafe_allow_html = True)
+st.markdown("***")
 
 with st.container() :
     
@@ -204,15 +205,21 @@ with st.container() :
             
             col_1, col_2= st.columns(2)
             
-            with col_1 :
+            trading_df['Date'] = trading_df.index
             
+            with col_1 :
                 st.header('Purchase Information')
-                st.dataframe(trading_df[trading_df['Buy'] > 0].Buy, width = 800)
+                st.dataframe(trading_df[trading_df['Buy'] > 0].sort_values(by = 'Date', ascending = False)\
+                             .drop(columns = ['Close', 'Date', 'Sell', 'SMA', 'EWM', 'Position', 'Signal']))
+                st.dataframe(trading_df[trading_df['Buy'] > 0].sort_values(by = 'Date', ascending = False)\
+                             .drop(columns = ['Close', 'Date', 'Sell', 'SMA', 'EWM', 'Position', 'Signal']).describe())
                 
             with col_2 :
-                
                 st.header('Sale Information')
-                st.dataframe(trading_df[trading_df['Sell'] > 0].Sell)
+                st.dataframe(trading_df[trading_df['Sell'] > 0].sort_values(by = 'Date', ascending = False)\
+                             .drop(columns = ['Close', 'Date', 'Buy', 'SMA', 'EWM', 'Position', 'Signal']))
+                st.dataframe(trading_df[trading_df['Sell'] > 0].sort_values(by = 'Date', ascending = False)\
+                                 .drop(columns = ['Close', 'Date', 'Buy', 'SMA', 'EWM', 'Position', 'Signal']).describe())
         
         st.markdown("***")
         
