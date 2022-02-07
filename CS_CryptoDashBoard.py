@@ -195,7 +195,7 @@ with st.container() :
         
         st.subheader("Moving Simple and Exponential Trading Strategy Applied Over " \
                          + str(moving_averages) + " Days = $" + str(profit) + \
-                             " Return<br>With a Open Position of : $" + str(round(open_position, 2)) + " after a Initial Investemnt of $" + str(round(trading_df[trading_df["Buy"] > 0]['Buy'][0],3)) + "<br>[between the dates " + str(datetime.date.strftime(start, '%d %B %Y')) \
+                             " Return With a Open Position of : $" + str(round(open_position, 2)) + " after a Initial Investemnt of $" + str(round(trading_df[trading_df["Buy"] > 0]['Buy'][0],3)) + "[between the dates " + str(datetime.date.strftime(start, '%d %B %Y')) \
                                  + ' and ' + str(datetime.date.strftime(end, '%d %B %Y')) + ']')
         st.plotly_chart(fig, use_container_width = True)
         
