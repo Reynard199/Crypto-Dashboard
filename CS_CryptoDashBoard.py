@@ -177,8 +177,8 @@ with st.container() :
         fig.add_trace(go.Scatter(x = df['Date'], y = df['Close'], mode = 'lines', line=dict(color='royalblue', width=2), name = 'Closing Price'))
         fig.add_trace(go.Scatter(x = df['Date'], y = trading_df['Buy'], mode = 'markers', name = 'Buy', marker=dict(color='green', size =7)))
         fig.add_trace(go.Scatter(x = df['Date'], y = trading_df['Sell'], mode = 'markers', name = 'Sell', marker=dict(color='red', size =7)))
-        fig.update_layout(autosize = True,
-                # width = 1400, height = 600,
+        fig.update_layout(autosize = False,
+                width = 1400, height = 600,
                 title = ("Moving Simple and Exponential Trading Strategy Applied Over " + str(moving_averages) + " Days = $" + str(profit) + " Return <br> [between the dates " + str(datetime.date.strftime(start, '%d %B %Y')) + ' and ' + str(datetime.date.strftime(end, '%d %B %Y')) + ']'),
                 title_x = 0.5,
                 xaxis_title = ("Date Range between " + str(start) + ' and ' + str(end)),
