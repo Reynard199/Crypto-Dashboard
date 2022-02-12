@@ -6,3 +6,6 @@ Pillow==9.0.0
 plotly==5.1.0
 streamlit==1.4.0
 fbprophet==0.7.1
+pystan==2.19.1.1
+
+
