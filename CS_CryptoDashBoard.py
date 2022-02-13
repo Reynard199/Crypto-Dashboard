@@ -78,7 +78,8 @@ def get_data(symbol, start_date, end_date) :
     
     df['Year'] = df.Date.dt.year
     df['Month'] = df.Date.dt.month
-    df['Returns'] = (df['Close'] / df["Close"].iloc[0] - 1) * 100
+    df['Total Returns (%)'] = (df['Close'] / df["Close"].iloc[0] - 1) * 100
+    df['Daily Returns (%)'] = ((df['Close'] - df['Close'].shift(1)) / df['Close'].shift(1)) * 100
 
     df = df.set_index(pd.DatetimeIndex(df['Date'].values))
     
@@ -104,17 +105,17 @@ fig = go.Figure(
 st.markdown("***")
 
 st.header(crypto_name + ' Data for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
-st.dataframe(df.sort_values(by = 'Date', ascending=False).drop(columns = 'Date'))
+st.dataframe(df.sort_values(by = 'Date', ascending=False).drop(columns = ['Date', 'Year', 'Month']))
 
 st.markdown("***")
 
 st.header(crypto_name + ' Closing Price Statistics for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
-st.dataframe(df.groupby(df.Date.dt.year).Close.describe().transpose(), width = 1200)
+st.table(df.groupby(df.Date.dt.year).Close.describe().transpose())
 
 st.markdown("***")
 
 st.header(crypto_name + ' Returns Statistics for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
-st.dataframe(df.groupby(df.Date.dt.year).Returns.describe().transpose(), width = 2000)
+st.table(df.groupby(df.Date.dt.year)['Total Returns (%)'].describe().transpose())
 
 st.markdown("***")
 
@@ -162,7 +163,7 @@ with st.container() :
         trading_df['Buy'] = np.where(trading_df['Position'] == 1, trading_df['Close'], np.NAN)
         trading_df['Sell'] = np.where(trading_df['Position'] == -1, trading_df['Close'], np.NAN)
         
-        return_profit = df['Returns']
+        return_profit = df['Total Returns (%)']
         return_profit['Position'] = trading_df['Position']
         return_profit['Buy'] = trading_df['Buy']
         return_profit['Sell'] = trading_df['Sell']
@@ -175,29 +176,42 @@ with st.container() :
         # return_profit_df = round(sum(np.array(-return_profit[return_profit['Position'] > 0]['Buy'])) + sum(np.array(return_profit[trading_df['Position'] < 0]['Sell'])), 3)
         profit = round(sum(np.array(-trading_df[trading_df['Position'] > 0]['Buy'])) + sum(np.array(trading_df[trading_df['Position'] < 0]['Sell'])), 3)
         
+        initial_price = round(trading_df[trading_df["Buy"] > 0]['Buy'][0],3)
+        performance_df = pd.DataFrame({'Period' : [moving_averages], 'Unrealised Gain' : [open_position], 'Profit ($)' : [profit], "Rough Amount Spent ($)" : [initial_price], 'Rough Return (%)' : [profit / initial_price * 100]})
+        
         fig = go.Figure()
         fig.add_trace(go.Scatter(x = df['Date'], y = df['Close'], mode = 'lines', line=dict(color='royalblue', width=2), name = 'Closing Price'))
         fig.add_trace(go.Scatter(x = df['Date'], y = trading_df['Buy'], mode = 'markers', name = 'Buy', marker=dict(color='green', size =7)))
         fig.add_trace(go.Scatter(x = df['Date'], y = trading_df['Sell'], mode = 'markers', name = 'Sell', marker=dict(color='red', size =7)))
-        fig.update_layout(title_x = 0.5,
+        fig.update_layout(# autosize = True,
+                # width = 1200,
+                # height = 600,
+                title = ("Moving Simple and Exponential Trading Strategy Applied Over " \
+                         + str(moving_averages) + " Days"),
+                title_x = 0.5,
                 xaxis_title = ("Date Range between " + str(start) + ' and ' + str(end)),
                 yaxis_title = "Price in USD",
                 legend_title = "Legend",
                 title_font=dict(
                     family = "New Times Roman",
-                    size = 22,
+                    size = 24,
                     ),
                 font = dict(family = "New Times Roman",
                         size = 16),
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)'
                 )
-        
-        st.subheader("Moving Simple and Exponential Trading Strategy Applied Over " \
-                         + str(moving_averages) + " Days = $" + str(profit) + \
-                             " Return With a Open Position of : $" + str(round(open_position, 2)) + " after a Initial Investemnt of $" + str(round(trading_df[trading_df["Buy"] > 0]['Buy'][0],3)) + " [between the dates " + str(datetime.date.strftime(start, '%d %B %Y')) \
-                                 + ' and ' + str(datetime.date.strftime(end, '%d %B %Y')) + ']')
         st.plotly_chart(fig, use_container_width = True)
+        
+        def color_df(val):
+            if val > 0:
+                color = 'green'
+            else :
+                color = 'red'
+            return f'background-color: {color}'
+        
+        st.subheader('Performance Metrics')
+        st.table(performance_df.style.applymap(color_df, subset = ['Profit ($)', 'Rough Return (%)']))
         
         with st.expander('Click to Reveal the Transaction Data', expanded = False) :
             
@@ -206,24 +220,20 @@ with st.container() :
             trading_df['Date'] = trading_df.index
             
             with col_1 :
-                st.header('Purchase Information')
-                st.dataframe(trading_df[trading_df['Buy'] > 0].sort_values(by = 'Date', ascending = False)\
+                st.header(str('Purchase Information of ' + str(trading_df[trading_df['Sell'] > 0].count()[0]) + ' Transactions'))
+                st.table(trading_df[trading_df['Buy'] > 0].sort_values(by = 'Date', ascending = False)\
                              .drop(columns = ['Close', 'Date', 'Sell', 'SMA', 'EWM', 'Position', 'Signal']))
-                st.dataframe(trading_df[trading_df['Buy'] > 0].sort_values(by = 'Date', ascending = False)\
-                             .drop(columns = ['Close', 'Date', 'Sell', 'SMA', 'EWM', 'Position', 'Signal']).describe())
                 
             with col_2 :
-                st.header('Sale Information')
-                st.dataframe(trading_df[trading_df['Sell'] > 0].sort_values(by = 'Date', ascending = False)\
+                st.header(str('Sale Information of ' + str(trading_df[trading_df['Sell'] > 0].count()[0]) + ' Transactions'))
+                st.table(trading_df[trading_df['Sell'] > 0].sort_values(by = 'Date', ascending = False)\
                              .drop(columns = ['Close', 'Date', 'Buy', 'SMA', 'EWM', 'Position', 'Signal']))
-                st.dataframe(trading_df[trading_df['Sell'] > 0].sort_values(by = 'Date', ascending = False)\
-                                 .drop(columns = ['Close', 'Date', 'Buy', 'SMA', 'EWM', 'Position', 'Signal']).describe())
         
         st.markdown("***")
         
-        return trading_df, profit, open_position, fig
+        return trading_df, profit, open_position, fig, performance_df
 
-trading_df, profit, open_position, fig = trading(moving_averages)
+trading_df, profit, open_position, fig, performance_df = trading(moving_averages)
 
 
 
