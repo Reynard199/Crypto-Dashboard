@@ -1,3 +1,5 @@
+# streamlit run "/Users/danreeynard/Documents/Crypto_Dash_Board/CS_CryptoDashBoard.py"
+
 import streamlit as st
 import pandas as pd
 from pandas_datareader import data as web
@@ -10,7 +12,7 @@ import numpy as np
 from PIL import Image
 # import streamlit.components.v1 as components
 
-st.set_page_config(layout = 'wide', initial_sidebar_state = 'expanded', page_title = "Dan's Shitty Crypto Dashboard")
+st.set_page_config(layout = 'wide', initial_sidebar_state = 'expanded', page_title = "Dan's Shitty Crypto Dashboard", page_icon = "https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/Photos/Pizza%20Angel%20Icon.jpg")
 
 col_1, col_2= st.columns(2)
 
@@ -29,7 +31,6 @@ with col_2 :
 st.sidebar.header("*Control Panel*")
 
 def get_input():
-    form = st.sidebar.form('Submit_button')
     start_date = st.sidebar.date_input("Start Date", value = datetime.date(2016,1,1), max_value = (datetime.date.today() - datetime.timedelta(days = 1)))
     end_date = st.sidebar.date_input("End Date", value = datetime.date.today(), max_value = datetime.date.today())
     # crypto_symbol = st.sidebar.text_input("Crypto Symbol", "BTC-USD")
@@ -39,7 +40,6 @@ def get_input():
                     max_value=(120),
                     value = (14),
                     step=(1))
-    submit_button = form.form_submit_button('Submit')
     
     return start_date, end_date, crypto_symbol, moving_averages
 
@@ -54,6 +54,7 @@ def get_crypto_name(symbol):
     else :
         return "None"
 
+@st.cache
 def get_data(symbol, start_date, end_date) :
     symbol = symbol.upper()
     
@@ -83,6 +84,10 @@ def get_data(symbol, start_date, end_date) :
 
     df = df.set_index(pd.DatetimeIndex(df['Date'].values))
     
+    cols = df.columns.tolist()
+    reorder = cols[0:4] + cols[5:6] + cols[4:5] + cols[6:]
+    df = df[reorder]
+    
     return df.loc[start_date : end_date]
 
 
@@ -104,18 +109,36 @@ fig = go.Figure(
 
 st.markdown("***")
 
+def color_df(val):
+    color = 'red' if val <= -5 else 'orange' if -3 < val < 0 else 'yellow' if 0 < val < 3 else 'green'
+    return 'color: %s' % color
+    
 st.header(crypto_name + ' Data for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
-st.dataframe(df.sort_values(by = 'Date', ascending=False).drop(columns = ['Date', 'Year', 'Month']))
+st.dataframe(df.sort_values(by = 'Date', ascending=False).drop(columns = ['Date', 'Year', 'Month', 'High', 'Low', "Open"]).style.applymap(color_df, subset = ['Daily Returns (%)']))
 
 st.markdown("***")
 
 st.header(crypto_name + ' Closing Price Statistics for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
-st.table(df.groupby(df.Date.dt.year).Close.describe().transpose())
+st.table(df.groupby(df.Date.dt.year)['Adj Close'].describe().transpose())
 
 st.markdown("***")
 
 st.header(crypto_name + ' Returns Statistics for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
-st.table(df.groupby(df.Date.dt.year)['Total Returns (%)'].describe().transpose())
+return_stats = pd.DataFrame(df[['Year', 'Daily Returns (%)']].groupby(by = 'Year').sum())
+return_stats["Annual Standard Deviation (%)"] = df[['Year', 'Daily Returns (%)']].groupby(by = 'Year').std()
+return_stats["Average Return (%)"] = df[['Year', 'Daily Returns (%)']].groupby(by = 'Year').mean()
+return_stats["Median Annual Return (%)"] = (df[['Year', 'Daily Returns (%)']].groupby(by = 'Year').median())
+return_stats["Number of Days"] = (df[['Year', 'Daily Returns (%)']].groupby(by = 'Year').count())
+return_stats_plot = px.line(return_stats, x = return_stats.index, y = ['Average Return (%)', 'Median Annual Return (%)'])
+return_stats_plot.update_layout(
+    plot_bgcolor='rgba(0,0,0,0)',
+    title_x = 0.5,
+    xaxis_title = ("Date Range between " + str(start) + ' and ' + str(end)),
+    yaxis_title = "Price in USD",
+    legend_title = "Legend"
+)
+st.plotly_chart(return_stats_plot, use_container_width = True)
+st.table(return_stats.transpose())
 
 st.markdown("***")
 
@@ -177,7 +200,7 @@ with st.container() :
         profit = round(sum(np.array(-trading_df[trading_df['Position'] > 0]['Buy'])) + sum(np.array(trading_df[trading_df['Position'] < 0]['Sell'])), 3)
         
         initial_price = round(trading_df[trading_df["Buy"] > 0]['Buy'][0],3)
-        performance_df = pd.DataFrame({'Period' : [moving_averages], 'Unrealised Gain' : [open_position], 'Profit ($)' : [profit], "Rough Amount Spent ($)" : [initial_price], 'Rough Return (%)' : [profit / initial_price * 100]})
+        performance_df = pd.DataFrame({'Period' : [moving_averages], 'Unrealised Gain on Open Position' : [open_position], 'Profit ($)' : [profit], "Rough Amount Spent ($)" : [initial_price], 'Rough Return (%)' : [profit / initial_price * 100]})
         
         fig = go.Figure()
         fig.add_trace(go.Scatter(x = df['Date'], y = df['Close'], mode = 'lines', line=dict(color='royalblue', width=2), name = 'Closing Price'))
