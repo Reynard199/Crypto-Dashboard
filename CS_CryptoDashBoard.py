@@ -110,7 +110,7 @@ fig = go.Figure(
 st.markdown("***")
 
 def color_df(val):
-    color = 'red' if val <= -5 else 'orange' if -3 < val < 0 else 'yellow' if 0 < val < 3 else 'green'
+    color = 'red' if val <= -3 else 'orange' if -3 < val < 0 else 'yellow' if 0 < val < 3 else 'green'
     return 'color: %s' % color
     
 st.header(crypto_name + ' Data for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
