@@ -216,10 +216,10 @@ with st.container() :
                 yaxis_title = "Price in USD",
                 legend_title = "Legend",
                 legend = dict(
-                    yanchor="top",
-                    y=0.99,
-                    xanchor="left",
-                    x=0.01),
+                    yanchor="bottom",
+                    y=0.01,
+                    xanchor="center",
+                    x=0.5),
                 title_font=dict(
                     family = "New Times Roman",
                     size = 24,
