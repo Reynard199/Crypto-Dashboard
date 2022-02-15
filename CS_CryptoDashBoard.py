@@ -244,7 +244,7 @@ with st.container() :
                 color = 'green'
             else :
                 color = 'red'
-            return f'background-color: {color}'
+            rreturn 'color: %s' % color
         
         st.subheader('Performance Metrics')
         st.table(performance_df.style.applymap(color_df, subset = ['Profit ($)', 'Rough Return (%)']))
