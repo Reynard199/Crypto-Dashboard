@@ -215,6 +215,11 @@ with st.container() :
                 xaxis_title = ("Date Range between " + str(start) + ' and ' + str(end)),
                 yaxis_title = "Price in USD",
                 legend_title = "Legend",
+                legend = dict(
+                    yanchor="top",
+                    y=0.99,
+                    xanchor="left",
+                    x=0.01),
                 title_font=dict(
                     family = "New Times Roman",
                     size = 24,
