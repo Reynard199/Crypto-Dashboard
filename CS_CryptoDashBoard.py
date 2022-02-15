@@ -106,8 +106,6 @@ fig = go.Figure(
         increasing_line_color = 'green',
         decreasing_line_color = 'red'
         )])
-fig.update_xaxes(showgrid=False)
-fig.update_yaxes(showgrid=False)
 
 st.markdown("***")
 
