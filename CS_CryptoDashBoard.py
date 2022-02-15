@@ -216,10 +216,12 @@ with st.container() :
                 yaxis_title = "Price in USD",
                 legend_title = "Legend",
                 legend = dict(
-                    yanchor="bottom",
-                    y=0.01,
-                    xanchor="center",
-                    x=0.5),
+                    yanchor="top",
+                    y=0.99,
+                    xanchor="left",
+                    x=0.01,
+                    itemclick="toggleothers",
+                    itemdoubleclick="toggle"),
                 title_font=dict(
                     family = "New Times Roman",
                     size = 24,
@@ -227,7 +229,7 @@ with st.container() :
                 font = dict(family = "New Times Roman",
                         size = 16),
                 paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)'
+                plot_bgcolor='black'
                 )
         st.plotly_chart(fig, use_container_width = True)
         
