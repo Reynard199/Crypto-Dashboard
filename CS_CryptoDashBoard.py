@@ -134,8 +134,10 @@ return_stats_plot.update_layout(
     plot_bgcolor='rgba(0,0,0,0)',
     title_x = 0.5,
     xaxis_title = ("Date Range between " + str(start) + ' and ' + str(end)),
-    yaxis_title = "Price in USD",
-    legend_title = "Legend"
+    yaxis_title = "Annual Returns(%)",
+    legend_title = "Legend",
+    legend = dict(itemclick="toggleothers",
+                  itemdoubleclick="toggle")
 )
 st.plotly_chart(return_stats_plot, use_container_width = True)
 st.table(return_stats.transpose())
@@ -229,8 +231,12 @@ with st.container() :
                 font = dict(family = "New Times Roman",
                         size = 16),
                 paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='black'
+                plot_bgcolor='rgba(0,0,0,0)'
                 )
+        
+        fig.update_xaxes(showgrid=False)
+        fig.update_yaxes(showgrid=False)
+        fig.show(config={"displayModeBar": False, "showTips": False})
         st.plotly_chart(fig, use_container_width = True)
         
         def color_df(val):
