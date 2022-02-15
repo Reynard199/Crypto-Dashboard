@@ -106,6 +106,8 @@ fig = go.Figure(
         increasing_line_color = 'green',
         decreasing_line_color = 'red'
         )])
+fig.update_xaxes(showgrid=False)
+fig.update_yaxes(showgrid=False)
 
 st.markdown("***")
 
@@ -139,6 +141,8 @@ return_stats_plot.update_layout(
     legend = dict(itemclick="toggleothers",
                   itemdoubleclick="toggle")
 )
+return_stats_plot.update_xaxes(showgrid=False)
+return_stats_plot.update_yaxes(showgrid=False)
 st.plotly_chart(return_stats_plot, use_container_width = True)
 st.table(return_stats.transpose())
 
@@ -244,7 +248,7 @@ with st.container() :
                 color = 'green'
             else :
                 color = 'red'
-            rreturn 'color: %s' % color
+            return 'color: %s' % color
         
         st.subheader('Performance Metrics')
         st.table(performance_df.style.applymap(color_df, subset = ['Profit ($)', 'Rough Return (%)']))
