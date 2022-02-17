@@ -10,6 +10,8 @@ import plotly.express as px
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
+from fear_greed_index.CNNFearAndGreedIndex import CNNFearAndGreedIndex
+from typing import Tuple
 # import streamlit.components.v1 as components
 
 st.set_page_config(layout = 'wide', initial_sidebar_state = 'expanded', page_title = "Dan's Shitty Crypto Dashboard", page_icon = "https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/Photos/Pizza%20Angel%20Icon.jpg")
@@ -54,7 +56,6 @@ def get_crypto_name(symbol):
     else :
         return "None"
 
-@st.cache
 def get_data(symbol, start_date, end_date) :
     symbol = symbol.upper()
     
@@ -110,7 +111,7 @@ fig = go.Figure(
 st.markdown("***")
 
 def color_df(val):
-    color = 'red' if val <= -3 else 'orange' if -3 < val < 0 else 'yellow' if 0 < val < 3 else 'green'
+    color = 'red' if val <= -5 else 'orange' if -3 < val < 0 else 'yellow' if 0 < val < 3 else 'green'
     return 'color: %s' % color
     
 st.header(crypto_name + ' Data for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
@@ -119,29 +120,45 @@ st.dataframe(df.sort_values(by = 'Date', ascending=False).drop(columns = ['Date'
 st.markdown("***")
 
 st.header(crypto_name + ' Closing Price Statistics for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
-st.table(df.groupby(df.Date.dt.year)['Adj Close'].describe().transpose())
+with st.expander('Reveals the Bitcoin Price Statisitics', expanded = False) :
+    st.table(df.groupby(df.Date.dt.year)['Adj Close'].describe().transpose())
 
 st.markdown("***")
 
 st.header(crypto_name + ' Returns Statistics for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
 return_stats = pd.DataFrame(df[['Year', 'Daily Returns (%)']].groupby(by = 'Year').sum())
-return_stats["Annual Standard Deviation (%)"] = df[['Year', 'Daily Returns (%)']].groupby(by = 'Year').std()
+return_stats["Annual Standard Deviation"] = df[['Year', 'Daily Returns (%)']].groupby(by = 'Year').std()
 return_stats["Average Return (%)"] = df[['Year', 'Daily Returns (%)']].groupby(by = 'Year').mean()
 return_stats["Median Annual Return (%)"] = (df[['Year', 'Daily Returns (%)']].groupby(by = 'Year').median())
 return_stats["Number of Days"] = (df[['Year', 'Daily Returns (%)']].groupby(by = 'Year').count())
-return_stats_plot = px.line(return_stats, x = return_stats.index, y = ['Average Return (%)', 'Median Annual Return (%)'])
-return_stats_plot.update_layout(
-    plot_bgcolor='rgba(0,0,0,0)',
-    title_x = 0.5,
-    xaxis_title = ("Date Range between " + str(start) + ' and ' + str(end)),
-    yaxis_title = "Annual Returns(%)",
-    legend_title = "Legend",
-    legend = dict(itemclick="toggleothers",
-                  itemdoubleclick="toggle")
-)
-return_stats_plot.update_xaxes(showgrid=False)
-return_stats_plot.update_yaxes(showgrid=False)
-st.plotly_chart(return_stats_plot, use_container_width = True)
+def dammit(y): 
+    x = []
+    for i in df['Year'].unique():
+       (x.append(str(i)))
+    return x
+unique_year = dammit(df['Year'].unique())
+selected_year = st.multiselect(label = 'Select Year to inspect Returns Distribution', options =  unique_year, default = ('2021'))
+conditions = [
+    (df['Daily Returns (%)'] <= -5),
+    (df['Daily Returns (%)'] > -5) & (df['Daily Returns (%)'] <= -3),
+    (df['Daily Returns (%)'] > -3) & (df['Daily Returns (%)'] <= 0),
+    (df['Daily Returns (%)'] > 0) & (df['Daily Returns (%)'] <= 3),
+    (df['Daily Returns (%)'] > 3)
+    ]
+values = ['Fuck', 'Oh Shit', 'It Is What It Is', "We'll take it", 'I <3 Cryptos']
+df['Commentary'] = np.select(conditions, values)
+for i in selected_year :
+    return_stats_plot = px.histogram(df[df['Year'] == int(i)], x = 'Daily Returns (%)', color = 'Commentary', nbins = len(df[df['Year'] == i]))
+    return_stats_plot.update_layout(
+            plot_bgcolor='rgba(0,0,0,0)',
+            title_x = 0.5,
+            xaxis_title = ("Date Range between " + str(start) + ' and ' + str(end)),
+            yaxis_title = "Daily Returns",
+            legend_title = "Legend",
+            # bargap = 0.01
+        )
+    st.plotly_chart(return_stats_plot, use_container_width = True)
+    
 st.table(return_stats.transpose())
 
 st.markdown("***")
@@ -157,12 +174,6 @@ st.bar_chart(df['Volume'])
 st.markdown("***")
 
 st.header(crypto_name + " CandleStick Chart for " + str(datetime.date.strftime(start, '%d %B %Y') + " to " + str(datetime.date.strftime(end, '%d %B %Y'))))
-# bootstrap 4 collapse example
-# components.html(
-#    """
-#    <div style="text-align: center"> Test </div>
-#    """,
-# )
 candle_stick = st.plotly_chart(fig, use_container_width=True)
 
 st.markdown("***")
@@ -219,13 +230,6 @@ with st.container() :
                 xaxis_title = ("Date Range between " + str(start) + ' and ' + str(end)),
                 yaxis_title = "Price in USD",
                 legend_title = "Legend",
-                legend = dict(
-                    yanchor="top",
-                    y=0.99,
-                    xanchor="left",
-                    x=0.01,
-                    itemclick="toggleothers",
-                    itemdoubleclick="toggle"),
                 title_font=dict(
                     family = "New Times Roman",
                     size = 24,
@@ -235,10 +239,6 @@ with st.container() :
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)'
                 )
-        
-        fig.update_xaxes(showgrid=False)
-        fig.update_yaxes(showgrid=False)
-        fig.show(config={"displayModeBar": False, "showTips": False})
         st.plotly_chart(fig, use_container_width = True)
         
         def color_df(val):
@@ -249,7 +249,7 @@ with st.container() :
             return 'color: %s' % color
         
         st.subheader('Performance Metrics')
-        st.table(performance_df.style.applymap(color_df, subset = ['Profit ($)', 'Rough Return (%)']))
+        st.table(performance_df.style.applymap(color_df, subset = ['Profit ($)', 'Rough Return (%)']).hide_index())
         
         with st.expander('Click to Reveal the Transaction Data', expanded = False) :
             
@@ -273,6 +273,59 @@ with st.container() :
 
 trading_df, profit, open_position, fig, performance_df = trading(moving_averages)
 
-
-
-    
+# =============================================================================
+# def get_feargreed_report(indicator: str, fig: plt.figure) -> Tuple[str, plt.figure]:
+#     """Display CNN Fear And Greed Index.
+# 
+#     Parameters
+#     ----------
+#     indicator : str
+#         CNN Fear And Greed indicator or index. From Junk Bond Demand, Market Volatility,
+#         Put and Call Options, Market Momentum Stock Price Strength, Stock Price Breadth,
+#         Safe Heaven Demand, and Index.
+#     plt.figure
+#         matplotlib figure initialized if indicator 'all' is selected
+# 
+#     Returns
+#     ----------
+#     str
+#         String output with respect to indicator chosen
+#     plt.figure
+#         matplotlib figure with indicator
+#     """
+#     cnn_fg = CNNFearAndGreedIndex()
+# 
+#     if indicator:
+#         if indicator == "index":
+#             return cnn_fg.index_summary, cnn_fg.index_chart
+# 
+#         d_indicator_match = {
+#             "jbd": "Junk Bond Demand",
+#             "mv": "Market Volatility",
+#             "pco": "Put and Call Options",
+#             "mm": "Market Momentum",
+#             "sps": "Stock Price Strength",
+#             "spb": "Stock Price Breadth",
+#             "shd": "Safe Heaven Demand",
+#         }
+#         indicator_name = d_indicator_match[indicator]
+# 
+#         for ind in cnn_fg.all_indicators:
+#             if indicator_name == ind.type_indicator:
+#                 return ind.get_report(), ind.chart
+# 
+#         return "", plt.figure()
+# 
+#     return cnn_fg.get_complete_report(), cnn_fg.plot_all_charts(fig)
+# 
+# indicator = "index"
+# 
+# fig = plt.figure(figsize=(15,7))
+# report, im = get_feargreed_report(indicator, fig)
+# 
+# print(report)
+# if indicator:
+#     plt.imshow(im)
+# 
+# st.plotly_chart(fig)    
+# =============================================================================
