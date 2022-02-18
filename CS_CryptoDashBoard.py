@@ -137,7 +137,7 @@ def dammit(y):
        (x.append(str(i)))
     return x
 unique_year = dammit(df['Year'].unique())
-selected_year = st.multiselect(label = 'Select Year to inspect Returns Distribution', options =  unique_year, default = ('2021'))
+selected_year = st.multiselect(label = 'Select Year to inspect Returns Distribution', options =  unique_year, default = ('2022'))
 conditions = [
     (df['Daily Returns (%)'] <= -5),
     (df['Daily Returns (%)'] > -5) & (df['Daily Returns (%)'] <= -3),
@@ -145,33 +145,40 @@ conditions = [
     (df['Daily Returns (%)'] > 0) & (df['Daily Returns (%)'] <= 3),
     (df['Daily Returns (%)'] > 3)
     ]
-values = ['Fuck', 'Oh Shit', 'It Is What It Is', "We'll take it", 'I <3 Cryptos']
+values = ['Fuck', 'Oh Shit', 'It Is What It Is', "We'll Take It", 'I <3 Cryptos']
 df['Commentary'] = np.select(conditions, values)
 for i in selected_year :
-    return_stats_plot = px.histogram(df[df['Year'] == int(i)], x = 'Daily Returns (%)', color = 'Commentary', nbins = len(df[df['Year'] == i]))
+    return_stats_plot = px.histogram(df[df['Year'] == int(i)],
+                    x = 'Daily Returns (%)', 
+                    color = 'Commentary', 
+                    nbins = 100,
+                    category_orders = dict({"Commentary" : ['Fuck', 'Oh Shit', 'It Is What It Is', "We'll Take It", 'I <3 Cryptos']}),
+                    color_discrete_sequence=["red", "orange", "yellow", "blue", "green"])
     return_stats_plot.update_layout(
-            plot_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor = 'rgba(0,0,0,0)',
             title_x = 0.5,
-            xaxis_title = ("Date Range between " + str(start) + ' and ' + str(end)),
-            yaxis_title = "Daily Returns",
+            xaxis_title = ("Daily Returns (%)  in between " + i + ' and ' + str(int(i)+1)),
+            yaxis_title = "Frequency of Daily Returns",
             legend_title = "Legend",
-            # bargap = 0.01
         )
+    return_stats_plot.update_xaxes(range = [-25,25])
     st.plotly_chart(return_stats_plot, use_container_width = True)
-    
+
 st.table(return_stats.transpose())
 
-st.markdown("***")
-
-st.header(crypto_name + ' Close Price for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
-st.line_chart(df['Close'])
-
-st.markdown("***")
-
-st.header(crypto_name + ' Volume for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
-st.bar_chart(df['Volume'])
-
-st.markdown("***")
+# =============================================================================
+# st.markdown("***")
+# 
+# st.header(crypto_name + ' Close Price for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
+# st.line_chart(df['Close'])
+# 
+# st.markdown("***")
+# 
+# st.header(crypto_name + ' Volume for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
+# st.bar_chart(df['Volume'])
+# 
+# st.markdown("***")
+# =============================================================================
 
 st.header(crypto_name + " CandleStick Chart for " + str(datetime.date.strftime(start, '%d %B %Y') + " to " + str(datetime.date.strftime(end, '%d %B %Y'))))
 candle_stick = st.plotly_chart(fig, use_container_width=True)
@@ -218,13 +225,12 @@ with st.container() :
         performance_df = pd.DataFrame({'Period' : [moving_averages], 'Unrealised Gain on Open Position' : [open_position], 'Profit ($)' : [profit], "Rough Amount Spent ($)" : [initial_price], 'Rough Return (%)' : [profit / initial_price * 100]})
         
         fig = go.Figure()
+        fig.add_trace(go.Scatter(x = df['Date'], y = trading_df['SMA'], mode = 'lines', line=dict(color='red', width=2), name = 'SMA', opacity = 0.5))
+        fig.add_trace(go.Scatter(x = df['Date'], y = trading_df['EWM'], mode = 'lines', line=dict(color='yellow', width=2), name = 'EWM', opacity = 0.5))
         fig.add_trace(go.Scatter(x = df['Date'], y = df['Close'], mode = 'lines', line=dict(color='royalblue', width=2), name = 'Closing Price'))
         fig.add_trace(go.Scatter(x = df['Date'], y = trading_df['Buy'], mode = 'markers', name = 'Buy', marker=dict(color='green', size =7)))
         fig.add_trace(go.Scatter(x = df['Date'], y = trading_df['Sell'], mode = 'markers', name = 'Sell', marker=dict(color='red', size =7)))
-        fig.update_layout(# autosize = True,
-                # width = 1200,
-                # height = 600,
-                title = ("Moving Simple and Exponential Trading Strategy Applied Over " \
+        fig.update_layout(title = ("Moving Simple and Exponential Trading Strategy Applied Over " \
                          + str(moving_averages) + " Days"),
                 title_x = 0.5,
                 xaxis_title = ("Date Range between " + str(start) + ' and ' + str(end)),
