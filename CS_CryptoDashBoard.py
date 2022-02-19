@@ -177,7 +177,7 @@ def dammit(y):
        (x.append(str(i)))
     return x
 unique_year = dammit(df['Year'].unique())
-selected_year = st.multiselect(label = 'Select Year to inspect Returns Distribution', options =  unique_year, default = ('2022'))
+selected_year = st.sidebar.multiselect(label = 'Select Year to inspect Returns Distribution', options =  unique_year, default = ('2022'))
 conditions = [
     (df['Daily Returns (%)'] <= -5),
     (df['Daily Returns (%)'] > -5) & (df['Daily Returns (%)'] <= -3),
