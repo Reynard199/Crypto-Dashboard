@@ -7,11 +7,12 @@ from datetime import timedelta
 import datetime
 import plotly.graph_objects as go
 import plotly.express as px
-import matplotlib.pyplot as plt
-import numpy as np
 from PIL import Image
 from fear_greed_index.CNNFearAndGreedIndex import CNNFearAndGreedIndex
-from typing import Tuple
+import yfinance as yf
+import seaborn as sns
+import numpy as np
+import matplotlib.pyplot as plt
 # import streamlit.components.v1 as components
 
 st.set_page_config(layout = 'wide', initial_sidebar_state = 'expanded', page_title = "Dan's Shitty Crypto Dashboard", page_icon = "https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/Photos/Pizza%20Angel%20Icon.jpg")
@@ -33,7 +34,7 @@ with col_2 :
 st.sidebar.header("*Control Panel*")
 
 def get_input():
-    start_date = st.sidebar.date_input("Start Date", value = datetime.date(2016,1,1), max_value = (datetime.date.today() - datetime.timedelta(days = 1)))
+    start_date = st.sidebar.date_input("Start Date", value = datetime.date(2021,1,1), max_value = (datetime.date.today() - datetime.timedelta(days = 1)))
     end_date = st.sidebar.date_input("End Date", value = datetime.date.today(), max_value = datetime.date.today())
     # crypto_symbol = st.sidebar.text_input("Crypto Symbol", "BTC-USD")
     crypto_symbol = st.sidebar.selectbox('Crypto Coin', options = ['BTC-USD', 'DOGE-USD', 'ETH-USD'])
@@ -110,12 +111,50 @@ fig = go.Figure(
 
 st.markdown("***")
 
+st.header('Return Comparisons between ' + crypto_name + ' and Other S&P500 Stock')
+ticker_list = pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')[0]['Symbol'][1:-1]
+ticker_list = ticker_list.append(pd.Series(['^GSPC', 'ETH-USD', 'DOGE-USD', 'BTC-USD']))
+ticker = st.multiselect('Selection of Ticker Prices', options = ticker_list, default = ['BTC-USD', 'ETH-USD', 'DOGE-USD'])
+def comparison_pricing(ticker) :
+    comparison_pricing_df = pd.DataFrame()
+    for i in ticker :
+        comparison_pricing_df[i] = yf.download(i, start = start, end = end, interval = '1d', group_by = 'tickers')['Close']
+    return comparison_pricing_df
+
+comparison_pricing_df = comparison_pricing(ticker)
+comparison_pricing_df[crypto_name] = df['Adj Close']
+comparison_returns = (comparison_pricing_df / comparison_pricing_df.iloc[1] - 1) * 100
+comparison_pricing_plot = px.line(comparison_returns)
+comparison_pricing_plot.update_layout(
+        plot_bgcolor = 'rgba(0,0,0,0)',
+        title_x = 0.5,
+        xaxis_title = ("Dates between " + str(start) + ' and ' + str(end)),
+        yaxis_title = "Percentage Returns (%)",
+        legend_title = "Legend",
+    )
+
+st.plotly_chart(comparison_pricing_plot, use_container_width = True)
+
+st.markdown('---')
+
 def color_df(val):
     color = 'red' if val <= -5 else 'orange' if -3 < val < 0 else 'yellow' if 0 < val < 3 else 'green'
     return 'color: %s' % color
     
 st.header(crypto_name + ' Data for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
 st.dataframe(df.sort_values(by = 'Date', ascending=False).drop(columns = ['Date', 'Year', 'Month', 'High', 'Low', "Open"]).style.applymap(color_df, subset = ['Daily Returns (%)']))
+
+st.markdown('---')
+
+st.header('Return Correlation Matrix and Heatmap of ' + crypto_name)
+col_1,col_2 = st.columns(2)
+with col_1 :
+    comparison_returns_corr = comparison_returns.corr()
+    comparison_returns_corr_plot, ax = plt.subplots()
+    sns.heatmap(comparison_returns_corr, ax=ax)
+    st.write(comparison_returns_corr_plot)
+with col_2 :
+    st.table(comparison_returns_corr)
 
 st.markdown("***")
 
@@ -147,7 +186,7 @@ conditions = [
     ]
 values = ['Fuck', 'Oh Shit', 'It Is What It Is', "We'll Take It", 'I <3 Cryptos']
 df['Commentary'] = np.select(conditions, values)
-for i in selected_year :
+for i in selected_year : 
     return_stats_plot = px.histogram(df[df['Year'] == int(i)],
                     x = 'Daily Returns (%)', 
                     color = 'Commentary', 

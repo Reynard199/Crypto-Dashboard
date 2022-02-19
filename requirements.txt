@@ -6,3 +6,4 @@ Pillow==9.0.0
 plotly==5.1.0
 streamlit==1.4.0
 fear-greed-index==0.1.4
+seaborn == 0.9.0
