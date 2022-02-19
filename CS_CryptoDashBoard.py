@@ -133,6 +133,7 @@ comparison_pricing_plot.update_layout(
         legend_title = "Legend",
     )
 
+st.table(comparison_returns)
 st.plotly_chart(comparison_pricing_plot, use_container_width = True)
 
 st.markdown('---')
