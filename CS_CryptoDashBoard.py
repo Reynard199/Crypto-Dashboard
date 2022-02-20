@@ -3,7 +3,7 @@
 import streamlit as st
 import pandas as pd
 from pandas_datareader import data as web
-from datetime import timedelta
+from datetime import timedelta, date
 import datetime
 import plotly.graph_objects as go
 import plotly.express as px
@@ -50,7 +50,7 @@ def get_input():
     ticker = st.sidebar.multiselect('Selection of Ticker Prices', options = ticker_list, default = ['BTC-USD', 'ETH-USD', 'DOGE-USD', selected_stock])
     moving_averages = st.sidebar.slider(label = 'Moving Averages Time Period',
                     min_value = (3),
-                    max_value=(end_data - start_date),
+                    max_value=(end_date - start_date),
                     value = (14),
                     step=(1))
     
