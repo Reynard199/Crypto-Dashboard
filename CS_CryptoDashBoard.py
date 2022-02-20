@@ -50,7 +50,7 @@ def get_input():
     ticker = st.sidebar.multiselect('Selection of Ticker Prices', options = ticker_list, default = ['BTC-USD', 'ETH-USD', 'DOGE-USD', selected_stock])
     moving_averages = st.sidebar.slider(label = 'Moving Averages Time Period',
                     min_value = (3),
-                    max_value=(120),
+                    max_value=(end_data - start_date),
                     value = (14),
                     step=(1))
     
