@@ -34,6 +34,7 @@ with col_2 :
         st.write("1) The Control Panel is where all the viables are inserted into the dashboard.")
         st.write("2) The Legend can be used to Hide / Display certain stock when the line is clicked on.")
         st.write("3) Click on the 'Expand' buttons to receive explanations.")
+        st.write("4) This App is best viewed on larger screen.")
         
     
 st.sidebar.header("*Control Panel*")
@@ -44,7 +45,7 @@ def get_input():
         st.write('Cryptos have data for weekends and public holidays (New Years Day etc), while stocks do not. Please select a week day to receive the greatest comparison functionality. Thanks!')
     start_date = st.sidebar.date_input("Start Date", value = datetime.date(2021,1,4), max_value = (datetime.date.today() - datetime.timedelta(days = 1)))
     end_date = st.sidebar.date_input("End Date", value = datetime.date.today(), max_value = datetime.date.today())
-    selected_stock = st.sidebar.text_input('Select a Ticker as per the Yahoo Finance Ticker Format (ABG.JO is ABSA)', 'ABG.JO')
+    selected_stock = st.sidebar.text_input('Select a Ticker as per the Yahoo Finance Ticker Format (ABG.JO is ABSA)', 'ABG.JO').to_upper()
     ticker_list = pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')[0]['Symbol'][1:-1]
     ticker_list = ticker_list.append(pd.Series(['^GSPC', 'ETH-USD', 'DOGE-USD', 'BTC-USD', '^J203.JO', selected_stock]))
     ticker_list = ticker_list.unique()
