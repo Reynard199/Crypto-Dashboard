@@ -27,10 +27,10 @@ with col_1 :
 
 with col_2 :
     st.write("""
-        # Dan's Shitty Cryptocurrency DashBoard
+        # The Shit Cryptocurrency DashBoard
         **Visually show data on cryto (BTC-USD, DOGE-USD, ETH-USD)**
         """)
-    with st.expander('Brief Overview : How to') :
+    with st.expander('Brief Overview : How to', expanded = False) :
         st.write("""
             The Control Panel is where all the viables are inserted into the dashboard.
             The Legend can be used to Hide / Display certain stock when the line is clicked on.
