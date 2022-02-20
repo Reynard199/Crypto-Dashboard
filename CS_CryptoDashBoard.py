@@ -30,21 +30,33 @@ with col_2 :
         # Dan's Shitty Cryptocurrency DashBoard
         **Visually show data on cryto (BTC-USD, DOGE-USD, ETH-USD)**
         """)
+    with st.expander('Brief Overview : How to') :
+        st.write("""
+            The Control Panel is where all the viables are inserted into the dashboard.
+            The Legend can be used to Hide / Display certain stock when the line is clicked on.
+            """)
+        
     
 st.sidebar.header("*Control Panel*")
 
 def get_input():
+    crypto_symbol = st.sidebar.selectbox('Crypto Coin', options = ['BTC-USD', 'DOGE-USD', 'ETH-USD'])
+    with st.sidebar.expander('Note about Date Selection', expanded = False) :
+        st.write('Cryptos have data for weekends and public holidays (New Years Day etc), while stocks do not. Please select a week day to receive the greatest comparison functionality. Thanks!')
     start_date = st.sidebar.date_input("Start Date", value = datetime.date(2021,1,1), max_value = (datetime.date.today() - datetime.timedelta(days = 1)))
     end_date = st.sidebar.date_input("End Date", value = datetime.date.today(), max_value = datetime.date.today())
-    # crypto_symbol = st.sidebar.text_input("Crypto Symbol", "BTC-USD")
-    crypto_symbol = st.sidebar.selectbox('Crypto Coin', options = ['BTC-USD', 'DOGE-USD', 'ETH-USD'])
+    selected_stock = st.sidebar.text_input('Select a Ticker as per the Yahoo Finance Ticker Format (ABG.JO is ABSA)', 'ABG.JO')
+    ticker_list = pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')[0]['Symbol'][1:-1]
+    ticker_list = ticker_list.append(pd.Series(['^GSPC', 'ETH-USD', 'DOGE-USD', 'BTC-USD', '^J203.JO', selected_stock]))
+    ticker_list = ticker_list.unique()
+    ticker = st.sidebar.multiselect('Selection of Ticker Prices', options = ticker_list, default = ['BTC-USD', 'ETH-USD', 'DOGE-USD', selected_stock])
     moving_averages = st.sidebar.slider(label = 'Moving Averages Time Period',
                     min_value = (3),
                     max_value=(120),
                     value = (14),
                     step=(1))
     
-    return start_date, end_date, crypto_symbol, moving_averages
+    return start_date, end_date, crypto_symbol, moving_averages, ticker, selected_stock
 
 def get_crypto_name(symbol):
     symbol = symbol.upper()
@@ -65,19 +77,14 @@ def get_data(symbol, start_date, end_date) :
     
     if symbol == "BTC-USD" :
         df = web.DataReader(name = symbol, data_source = 'yahoo', start = start_date, end = end_date)
-        # df = pd.read_csv("https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/CSV%20Datafiles/BTC-USD.csv?raw=true")
     elif symbol == "ETH-USD" :
         df = web.DataReader(name = symbol, data_source = 'yahoo', start = start_date, end = end_date)
-        # df = pd.read_csv("https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/CSV%20Datafiles/DOGE-USD.csv")
     elif symbol == 'DOGE-USD' :
         df = web.DataReader(name = symbol, data_source = 'yahoo', start = start_date, end = end_date)
-        # df = pd.read_csv("https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/CSV%20Datafiles/ETH-USD.csv")
     else :
         df = pd.DataFrame(columns = ['Date', 'Close', 'Open', 'High', 'Low', 'Adj Close', 'Volume'])
     
     df['Date'] = df.index
-    
-    #df['Date'] = pd.to_datetime(df['Date'])
     
     df['Year'] = df.Date.dt.year
     df['Month'] = df.Date.dt.month
@@ -93,7 +100,7 @@ def get_data(symbol, start_date, end_date) :
     return df.loc[start_date : end_date]
 
 
-start, end, symbol, moving_averages = get_input()
+start, end, symbol, moving_averages, ticker, selected_stock = get_input()
 df = get_data(symbol, start, end)
 
 crypto_name = get_crypto_name(symbol)
@@ -112,9 +119,6 @@ fig = go.Figure(
 st.markdown("***")
 
 st.header('Return Comparisons between ' + crypto_name + ' and Other S&P500 Stock')
-ticker_list = pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')[0]['Symbol'][1:-1]
-ticker_list = ticker_list.append(pd.Series(['^GSPC', 'ETH-USD', 'DOGE-USD', 'BTC-USD']))
-ticker = st.sidebar.multiselect('Selection of Ticker Prices', options = ticker_list, default = ['BTC-USD', 'ETH-USD', 'DOGE-USD'])
 def comparison_pricing(ticker) :
     comparison_pricing_df = pd.DataFrame()
     for i in ticker :
@@ -122,18 +126,17 @@ def comparison_pricing(ticker) :
     return comparison_pricing_df
 
 comparison_pricing_df = comparison_pricing(ticker)
-comparison_pricing_df[crypto_name] = df['Adj Close']
+comparison_pricing_df[symbol] = df['Adj Close']
 comparison_returns = (comparison_pricing_df / comparison_pricing_df.iloc[1] - 1) * 100
 comparison_pricing_plot = px.line(comparison_returns)
 comparison_pricing_plot.update_layout(
-        plot_bgcolor = 'rgba(0,0,0,0)',
+        plot_bgcolor = 'rgba(1,1,1,1)',
         title_x = 0.5,
         xaxis_title = ("Dates between " + str(start) + ' and ' + str(end)),
         yaxis_title = "Percentage Returns (%)",
-        legend_title = "Legend",
+        legend_title = "Legend"
     )
 
-# st.dataframe(comparison_returns)
 st.plotly_chart(comparison_pricing_plot, use_container_width = True)
 
 st.markdown('---')
@@ -177,7 +180,7 @@ def dammit(y):
        (x.append(str(i)))
     return x
 unique_year = dammit(df['Year'].unique())
-selected_year = st.sidebar.multiselect(label = 'Select Year to inspect Returns Distribution', options =  unique_year, default = ('2022'))
+selected_year = st.multiselect(label = 'Select Year to inspect Returns Distribution', options =  unique_year, default = ('2022'))
 conditions = [
     (df['Daily Returns (%)'] <= -5),
     (df['Daily Returns (%)'] > -5) & (df['Daily Returns (%)'] <= -3),
@@ -195,7 +198,7 @@ for i in selected_year :
                     category_orders = dict({"Commentary" : ['Fuck', 'Oh Shit', 'It Is What It Is', "We'll Take It", 'I <3 Cryptos']}),
                     color_discrete_sequence=["red", "orange", "yellow", "blue", "green"])
     return_stats_plot.update_layout(
-            plot_bgcolor = 'rgba(0,0,0,0)',
+            plot_bgcolor = 'rgba(1,1,1,1)',
             title_x = 0.5,
             xaxis_title = ("Daily Returns (%)  in between " + i + ' and ' + str(int(i)+1)),
             yaxis_title = "Frequency of Daily Returns",
@@ -282,8 +285,8 @@ with st.container() :
                     ),
                 font = dict(family = "New Times Roman",
                         size = 16),
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)'
+                paper_bgcolor='rgba(1,1,1,1)',
+                plot_bgcolor='rgba(1,1,1,1)'
                 )
         st.plotly_chart(fig, use_container_width = True)
         
