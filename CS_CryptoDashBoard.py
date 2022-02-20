@@ -33,6 +33,7 @@ with col_2 :
     with st.expander('Brief Overview : How to', expanded = False) :
         st.write("1) The Control Panel is where all the viables are inserted into the dashboard.")
         st.write("2) The Legend can be used to Hide / Display certain stock when the line is clicked on.")
+        st.write("3) Click on the 'Expand' buttons to receive explanations.")
         
     
 st.sidebar.header("*Control Panel*")
