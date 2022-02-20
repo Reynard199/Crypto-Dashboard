@@ -31,10 +31,8 @@ with col_2 :
         **Visually show data on cryto (BTC-USD, DOGE-USD, ETH-USD)**
         """)
     with st.expander('Brief Overview : How to', expanded = False) :
-        st.write("""
-            The Control Panel is where all the viables are inserted into the dashboard.
-            The Legend can be used to Hide / Display certain stock when the line is clicked on.
-            """)
+        st.write("1) The Control Panel is where all the viables are inserted into the dashboard.")
+        st.write("2) The Legend can be used to Hide / Display certain stock when the line is clicked on.")
         
     
 st.sidebar.header("*Control Panel*")
@@ -142,7 +140,7 @@ st.plotly_chart(comparison_pricing_plot, use_container_width = True)
 st.markdown('---')
 
 def color_df(val):
-    color = 'red' if val <= -5 else 'orange' if -3 < val < 0 else 'yellow' if 0 < val < 3 else 'green'
+    color = 'red' if val <= -3 else 'orange' if -3 < val < 0 else 'yellow' if 0 < val < 3 else 'green'
     return 'color: %s' % color
     
 st.header(crypto_name + ' Data for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
@@ -200,28 +198,15 @@ for i in selected_year :
     return_stats_plot.update_layout(
             plot_bgcolor = 'rgba(1,1,1,1)',
             title_x = 0.5,
-            xaxis_title = ("Daily Returns (%)  in between " + i + ' and ' + str(int(i)+1)),
+            xaxis_title = ("Daily Returns (%) of " + i),
             yaxis_title = "Frequency of Daily Returns",
             legend_title = "Legend",
         )
     return_stats_plot.update_xaxes(range = [-25,25])
     st.plotly_chart(return_stats_plot, use_container_width = True)
 
+# st.write('The number of days that earned a loss of 5% or greater was ' + str((df['Daily Returns (%)'] <= -5).count() + ' Days')
 st.table(return_stats.transpose())
-
-# =============================================================================
-# st.markdown("***")
-# 
-# st.header(crypto_name + ' Close Price for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
-# st.line_chart(df['Close'])
-# 
-# st.markdown("***")
-# 
-# st.header(crypto_name + ' Volume for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
-# st.bar_chart(df['Volume'])
-# 
-# st.markdown("***")
-# =============================================================================
 
 st.header(crypto_name + " CandleStick Chart for " + str(datetime.date.strftime(start, '%d %B %Y') + " to " + str(datetime.date.strftime(end, '%d %B %Y'))))
 candle_stick = st.plotly_chart(fig, use_container_width=True)
