@@ -183,7 +183,7 @@ st.header(crypto_name + ' Closing Price Statistics for ' + str(datetime.date.str
 with st.expander('Reveals the ' + crypto_name + ' Price Statisitics', expanded = False) :
     st.table(df.groupby(df.Date.dt.year)['Adj Close'].describe().transpose())
     st.subheader('Closing Price of ' + crypto_name)
-    st.plotly_chart(px.line(df['Adj Close']))
+    st.plotly_chart(px.line(df['Adj Close']), use_container_width = True)
 
 st.markdown("***")
 
