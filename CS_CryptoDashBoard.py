@@ -241,7 +241,7 @@ st.header(crypto_name + " CandleStick Chart for " + str(datetime.date.strftime(s
 candle_stick = st.plotly_chart(fig, use_container_width=True)
 
 st.markdown("---")
-st.header(crypto_name + ' : Moving Averages Trading Strategies')
+st.header(crypto_name + ' : Basic "Technical" Trading')
 with st.expander("Click to Expand Explanation of Moving Averages Trading Strategy", expanded = False) :
     explanation = "<p style='font-family:Times New Roman; font-size: 16px;'>A SMA-EWM Trading Strategy has simple underlying principles. When the EWM (Exponential Weighted Moving Average) crosses the SMA (Simple Moving Average), " \
         + str(crypto_name) + " is bought at the crossover price, indicated in green. The opposite action is taken if the EWM crosses the SMA, indicated in red. The number of periods that the weighted averages are calculated over is \
