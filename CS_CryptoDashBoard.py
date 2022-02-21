@@ -147,6 +147,12 @@ st.plotly_chart(comparison_pricing_plot, use_container_width = True)
 
 st.markdown('---')
 
+with st.expander('Commentary on the Returns of each crypto as well as some equity :', expanded = False) :
+    st.write('The Returns on DOGE-USD is no mistake - the first day that it traded on Yahoo Finance, the price was small that the returns have been disorted heavily. \
+             The Initial Price of DOGE-USD was = $' + str(comparison_pricing_df['DOGE-USD'][0] + ' and now has a pricing of = $' + str(comparison_pricing_df['DOGE-USD'][-1])))
+
+st.markdown('---')
+
 def color_df(val):
     color = 'red' if val <= -3 else 'orange' if -3 < val < 0 else 'yellow' if 0 < val < 3 else 'green'
     return 'color: %s' % color
