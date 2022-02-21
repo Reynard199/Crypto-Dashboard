@@ -148,9 +148,10 @@ st.plotly_chart(comparison_pricing_plot, use_container_width = True)
 st.markdown('---')
 
 with st.expander('Commentary on the Returns of each crypto as well as some equity :', expanded = False) :
-    st.write('The Returns on DOGE-USD is no mistake - the first day that it traded on Yahoo Finance, the price was small that the returns have been disorted heavily. \
-             The Initial Price of DOGE-USD was = $' + str(comparison_pricing_df['DOGE-USD'][0] + ' and now has a pricing of = $' + str(comparison_pricing_df['DOGE-USD'][-1])))
-
+    # st.write('The Returns on DOGE-USD is no mistake - the first day that it traded on Yahoo Finance, the price was small that the returns have been disorted heavily. \
+    #         The Initial Price of DOGE-USD was = $' + str(comparison_pricing_df['DOGE-USD'][0] + ' and now has a pricing of = $' + str(comparison_pricing_df['DOGE-USD'][-1])))
+    st.write("I would recommend hiding DOGE-USD for the time being due to its weird pricing")
+    
 st.markdown('---')
 
 def color_df(val):
