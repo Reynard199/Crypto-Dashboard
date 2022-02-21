@@ -125,7 +125,7 @@ st.header('Return Comparisons between ' + crypto_name + ' and Other S&P500 Stock
 def comparison_pricing(ticker) :
     comparison_pricing_df = pd.DataFrame()
     for i in ticker :
-        comparison_pricing_df[i] = web.DataReader(i, start = start, end = end, data_source = 'yahoo')['Adj_Close']
+        comparison_pricing_df[i] = web.DataReader(i, start = start, end = end,'yahoo')['Close']
     return comparison_pricing_df
 
 comparison_pricing_df = comparison_pricing(ticker)
