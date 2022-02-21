@@ -43,16 +43,19 @@ def get_input():
     crypto_symbol = st.sidebar.selectbox('Crypto Coin', options = ['BTC-USD', 'DOGE-USD', 'ETH-USD'])
     with st.sidebar.expander('Note about Date Selection', expanded = False) :
         st.write('Cryptos have data for weekends and public holidays (New Years Day etc), while stocks do not. Please select a week day to receive the greatest comparison functionality. Thanks!')
-    start_date = st.sidebar.date_input("Start Date", value = datetime.date(2021,1,4), max_value = (datetime.date.today() - datetime.timedelta(days = 1)))
+    start_date = st.sidebar.date_input("Start Date", value = datetime.date(2021,1,1), max_value = (datetime.date.today() - datetime.timedelta(days = 1)))
     end_date = st.sidebar.date_input("End Date", value = datetime.date.today(), max_value = datetime.date.today())
     selected_stock = st.sidebar.text_input('Select a Ticker as per the Yahoo Finance Ticker Format (ABG.JO is ABSA)', 'ABG.JO').upper()
     ticker_list = pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')[0]['Symbol'][1:-1]
     ticker_list = ticker_list.append(pd.Series(['^GSPC', 'ETH-USD', 'DOGE-USD', 'BTC-USD', '^J203.JO', selected_stock]))
     ticker_list = ticker_list.unique()
     ticker = st.sidebar.multiselect('Selection of Ticker Prices', options = ticker_list, default = ['BTC-USD', 'ETH-USD', 'DOGE-USD', selected_stock])
+    if ((end_date - start_date).days) > 120 :
+               x = 120
+    else : x = ((end_date - start_date).days)
     moving_averages = st.sidebar.slider(label = 'Moving Averages Time Period',
                     min_value = (3),
-                    max_value=((end_date - start_date).days),
+                    max_value=(x),
                     value = (14),
                     step=(1))
     
@@ -127,6 +130,7 @@ def comparison_pricing(ticker) :
 
 comparison_pricing_df = comparison_pricing(ticker)
 comparison_pricing_df[symbol] = df['Adj Close']
+# comparison_pricing_df.apply(pd.Series.first_valid_index)
 comparison_returns = (comparison_pricing_df / comparison_pricing_df.iloc[1] - 1) * 100
 comparison_pricing_plot = px.line(comparison_returns)
 comparison_pricing_plot.update_layout(
@@ -150,12 +154,18 @@ st.dataframe(df.sort_values(by = 'Date', ascending=False).drop(columns = ['Date'
 
 st.markdown('---')
 
+st.header(crypto_name + ' Volume for ' + str(start) + ' to ' + str(end))
+with st.expander('Click to Reveal ' + crypto_name + ' Volume', expanded = False) :
+    st.bar_chart(data = df['Volume'], use_container_width = True)
+
+st.markdown("---")
+
 st.header('Return Correlation Matrix and Heatmap of ' + crypto_name)
 col_1,col_2 = st.columns(2)
 with col_1 :
     comparison_returns_corr = comparison_returns.corr()
     comparison_returns_corr_plot, ax = plt.subplots()
-    sns.heatmap(comparison_returns_corr, ax=ax)
+    sns.heatmap(comparison_returns_corr, ax=ax, cmap="Reds")
     st.write(comparison_returns_corr_plot)
 with col_2 :
     st.table(comparison_returns_corr)
@@ -208,7 +218,20 @@ for i in selected_year :
     st.plotly_chart(return_stats_plot, use_container_width = True)
 
 # st.write('The number of days that earned a loss of 5% or greater was ' + str((df['Daily Returns (%)'] <= -5).count() + ' Days')
+
+st.subheader('Count of the number of each type of return day')
+with st.expander('Reveal the number of each type of return day', expanded = False) :
+    return_types = st.table(df['Commentary'].value_counts()[:-1])
+
+st.subheader('Basic Return Stats for ' + crypto_name)
 st.table(return_stats.transpose())
+
+st.markdown('---')
+
+# pie_plot = px.pie(df, values = return_types[:-1], names = ['Fuck', 'Oh Shit', 'It Is What It Is', "We'll Take It", 'I <3 Cryptos'])
+# st.plotly_chart(pie_plot, use_container_width = True)
+
+# st.markdown('---')
 
 st.header(crypto_name + " CandleStick Chart for " + str(datetime.date.strftime(start, '%d %B %Y') + " to " + str(datetime.date.strftime(end, '%d %B %Y'))))
 candle_stick = st.plotly_chart(fig, use_container_width=True)
