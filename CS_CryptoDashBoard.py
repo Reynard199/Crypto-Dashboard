@@ -43,7 +43,7 @@ def get_input():
     crypto_symbol = st.sidebar.selectbox('Crypto Coin', options = ['BTC-USD', 'DOGE-USD', 'ETH-USD'])
     with st.sidebar.expander('Note about Date Selection', expanded = False) :
         st.write('Cryptos have data for weekends and public holidays (New Years Day etc), while stocks do not. Please select a week day to receive the greatest comparison functionality. Thanks!')
-    start_date = st.sidebar.date_input("Start Date", value = datetime.date(2001,5,4), max_value = (datetime.date.today() - datetime.timedelta(days = 1)))
+    start_date = st.sidebar.date_input("Start Date", value = datetime.date(2021,1,1), max_value = (datetime.date.today() - datetime.timedelta(days = 1)))
     end_date = st.sidebar.date_input("End Date", value = datetime.date.today(), max_value = datetime.date.today())
     selected_stock = st.sidebar.text_input('Select a Ticker as per the Yahoo Finance Ticker Format (ABG.JO is ABSA)', 'ABG.JO').upper()
     ticker_list = pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')[0]['Symbol'][1:-1]
@@ -177,6 +177,7 @@ st.markdown("***")
 st.header(crypto_name + ' Closing Price Statistics for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
 with st.expander('Reveals the ' + crypto_name + ' Price Statisitics', expanded = False) :
     st.table(df.groupby(df.Date.dt.year)['Adj Close'].describe().transpose())
+    st.plotly_chart(px.line(df['Adj Close'], title = ('Closing Price of ' + crypto_name)))
 
 st.markdown("***")
 
@@ -238,7 +239,7 @@ st.markdown('---')
 st.header(crypto_name + " CandleStick Chart for " + str(datetime.date.strftime(start, '%d %B %Y') + " to " + str(datetime.date.strftime(end, '%d %B %Y'))))
 candle_stick = st.plotly_chart(fig, use_container_width=True)
 
-st.markdown("***")
+st.markdown("---")
 st.header(crypto_name + ' : Moving Averages Trading Strategies')
 with st.expander("Click to Expand Explanation of Moving Averages Trading Strategy", expanded = False) :
     explanation = "<p style='font-family:Times New Roman; font-size: 16px;'>A SMA-EWM Trading Strategy has simple underlying principles. When the EWM (Exponential Weighted Moving Average) crosses the SMA (Simple Moving Average), " \
