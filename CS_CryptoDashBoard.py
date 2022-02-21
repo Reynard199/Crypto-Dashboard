@@ -125,7 +125,7 @@ st.header('Return Comparisons between ' + crypto_name + ' and Other S&P500 Stock
 def comparison_pricing(ticker) :
     comparison_pricing_df = pd.DataFrame()
     for i in ticker :
-        comparison_pricing_df[i] = yf.download(i, start = start, end = end, interval = '1d', group_by = 'tickers')['Close']
+        comparison_pricing_df[i] = yf.download(i, start = start, end = end, interval = '1w', group_by = 'tickers')['Close']
     return comparison_pricing_df
 
 comparison_pricing_df = comparison_pricing(ticker)
