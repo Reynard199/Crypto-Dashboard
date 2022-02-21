@@ -43,7 +43,7 @@ def get_input():
     crypto_symbol = st.sidebar.selectbox('Crypto Coin', options = ['BTC-USD', 'DOGE-USD', 'ETH-USD'])
     with st.sidebar.expander('Note about Date Selection', expanded = False) :
         st.write('Cryptos have data for weekends and public holidays (New Years Day etc), while stocks do not. Please select a week day to receive the greatest comparison functionality. Thanks!')
-    start_date = st.sidebar.date_input("Start Date", value = datetime.date(2021,1,4), max_value = (datetime.date.today() - datetime.timedelta(days = 1)))
+    start_date = st.sidebar.date_input("Start Date", value = datetime.date(2001,5,4), max_value = (datetime.date.today() - datetime.timedelta(days = 1)))
     end_date = st.sidebar.date_input("End Date", value = datetime.date.today(), max_value = datetime.date.today())
     selected_stock = st.sidebar.text_input('Select a Ticker as per the Yahoo Finance Ticker Format (ABG.JO is ABSA)', 'ABG.JO').upper()
     ticker_list = pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')[0]['Symbol'][1:-1]
@@ -125,13 +125,15 @@ st.header('Return Comparisons between ' + crypto_name + ' and Other S&P500 Stock
 def comparison_pricing(ticker) :
     comparison_pricing_df = pd.DataFrame()
     for i in ticker :
-        comparison_pricing_df[i] = yf.download(i, start = start, end = end, interval = '1w', group_by = 'tickers')['Close']
+        comparison_pricing_df[i] = yf.download(i, start = start, end = end, interval = '1d', group_by = 'tickers')['Close']
     return comparison_pricing_df
 
 comparison_pricing_df = comparison_pricing(ticker)
 comparison_pricing_df[symbol] = df['Adj Close']
 # comparison_pricing_df.apply(pd.Series.first_valid_index)
-comparison_returns = (comparison_pricing_df / comparison_pricing_df.iloc[1] - 1) * 100
+comparison_returns = pd.DataFrame()
+for i in ticker :
+    comparison_returns[i] = (comparison_pricing_df[i] / comparison_pricing_df[i].loc[comparison_pricing_df[i].first_valid_index()] - 1) * 100
 comparison_pricing_plot = px.line(comparison_returns)
 comparison_pricing_plot.update_layout(
         plot_bgcolor = 'rgba(1,1,1,1)',
@@ -173,7 +175,7 @@ with col_2 :
 st.markdown("***")
 
 st.header(crypto_name + ' Closing Price Statistics for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
-with st.expander('Reveals the Bitcoin Price Statisitics', expanded = False) :
+with st.expander('Reveals the ' + crypto_name + ' Price Statisitics', expanded = False) :
     st.table(df.groupby(df.Date.dt.year)['Adj Close'].describe().transpose())
 
 st.markdown("***")
