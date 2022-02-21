@@ -27,10 +27,10 @@ with col_1 :
 
 with col_2 :
     st.write("""
-        # The Shit Cryptocurrency DashBoard
+        # Pizza Angel's Crypto DashBoard
         **Visually show data on cryto (BTC-USD, DOGE-USD, ETH-USD)**
         """)
-    with st.expander('Brief Overview : How to', expanded = False) :
+    with st.expander('Brief Overview : How to use dash', expanded = False) :
         st.write("1) The Control Panel is where all the viables are inserted into the dashboard.")
         st.write("2) The Legend can be used to Hide / Display certain stock when the line is clicked on.")
         st.write("3) Click on the 'Expand' buttons to receive explanations.")
