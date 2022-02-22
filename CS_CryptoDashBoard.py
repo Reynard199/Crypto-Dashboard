@@ -255,7 +255,6 @@ with st.expander("Click to Expand Explanation of Moving Averages Trading Strateg
     st.write(explanation, unsafe_allow_html=True)
     st.markdown("    ")
     st.markdown("<p style='font-family:Times New Roman; font-size: 16px;'>General Note - This trading strategy is rarely effective (Thanks Weak Efficient Market Hypothesis), but it was certainly interesting to code.<p>", unsafe_allow_html = True)
-st.markdown("***")
 
 with st.container() :
     
