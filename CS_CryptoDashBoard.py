@@ -32,9 +32,10 @@ with col_2 :
         """)
     with st.expander('Brief Overview : How to use dash', expanded = False) :
         st.write("1) The Control Panel is where all the viables are inserted into the dashboard.")
-        st.write("2) The Legend can be used to Hide / Display certain stock when the line is clicked on.")
-        st.write("3) Click on the 'Expand' buttons to receive explanations.")
-        st.write("4) This App is best viewed on larger screen.")
+        st.write('2) Set the App background to dark mode in the setting on the top right handside of the Dash.')
+        st.write("3) The Legend can be used to Hide / Display certain stock when the line is clicked on.")
+        st.write("4) Click on the 'Expand' buttons to receive explanations.")
+        st.write("5) This App is best viewed on larger screen.")
         
     
 st.sidebar.header("*Control Panel*")
