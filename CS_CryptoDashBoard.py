@@ -5,6 +5,7 @@ import pandas as pd
 from pandas_datareader import data as web
 from datetime import timedelta, date
 import datetime
+from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 import plotly.express as px
 from PIL import Image
