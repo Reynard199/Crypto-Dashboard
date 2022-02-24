@@ -141,7 +141,7 @@ for i in ticker :
         comparison_pricing_plot.add_trace(
             go.Scatter(x = comparison_returns[i].index, y = comparison_returns[i], mode = 'lines', connectgaps = True, name = i, legendgroup = "group", legendgrouptitle_text = "Right Hand Axis"),
             secondary_y=True)
-    else : comparison_pricing_plot.add_trace(go.Scatter(x = comparison_returns.index, y = comparison_returns[i], mode = 'lines', name = i, legendgroup = "group", legendgrouptitle_text = "Left Hand Axis"), connectgaps = True, secondary_y=False)
+    else : comparison_pricing_plot.add_trace(go.Scatter(x = comparison_returns.index, y = comparison_returns[i], mode = 'lines', name = i, legendgroup = "group", legendgrouptitle_text = "Left Hand Axis", connectgaps = True), secondary_y=False)
 
     
 comparison_pricing_plot.update_layout(
