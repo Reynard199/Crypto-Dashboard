@@ -29,7 +29,7 @@ with col_1 :
 with col_2 :
     st.write("""
         # Pizza Angel's Crypto DashBoard
-        **Visually show data on cryto (BTC-USD, DOGE-USD, ETH-USD)**
+        **Made for the Idiots, by an Idiot. Geniet.**
         """)
     with st.expander('Brief Overview : How to use dash', expanded = False) :
         st.write("1) The Control Panel is where all the viables are inserted into the dashboard.")
