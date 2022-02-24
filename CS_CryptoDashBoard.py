@@ -133,17 +133,30 @@ comparison_pricing_df = comparison_pricing(ticker)
 comparison_pricing_df[symbol] = df['Adj Close']
 # comparison_pricing_df.apply(pd.Series.first_valid_index)
 comparison_returns = pd.DataFrame()
+comparison_pricing_plot = make_subplots(specs=[[{"secondary_y": True}]])
 for i in ticker :
     comparison_returns[i] = (comparison_pricing_df[i] / comparison_pricing_df[i].loc[comparison_pricing_df[i].first_valid_index()] - 1) * 100
-comparison_pricing_plot = px.line(comparison_returns)
+    if comparison_returns[i].max() > 10000 :
+        comparison_pricing_plot.add_trace(
+            go.Scatter(x = comparison_returns[i].index, y = comparison_returns[i], mode = 'lines', connectgaps = True, name = 'DOGE-USD'),
+            secondary_y=True)
+    else : comparison_pricing_plot.add_trace(go.Scatter(x = comparison_returns.index, y = comparison_returns[i], mode = 'lines', name = i, connectgaps = True), secondary_y=False)
+
+    
 comparison_pricing_plot.update_layout(
         plot_bgcolor = 'rgba(1,1,1,1)',
         title_x = 0.5,
         xaxis_title = ("Dates between " + str(start) + ' and ' + str(end)),
         yaxis_title = "Percentage Returns (%)",
-        legend_title = "Legend"
-    )
-
+        # legend_title = "Legend",
+        legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=1.02,
+        xanchor="right",
+        x=0.9)
+        )
+comparison_pricing_plot.update_yaxes(rangemode='tozero', constraintoward='bottom')
 st.plotly_chart(comparison_pricing_plot, use_container_width = True)
 
 with st.expander('Commentary on the Returns of each crypto as well as some equity :', expanded = False) :
