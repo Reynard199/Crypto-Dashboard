@@ -148,15 +148,8 @@ comparison_pricing_plot.update_layout(
         plot_bgcolor = 'rgba(1,1,1,1)',
         title_x = 0.5,
         xaxis_title = ("Dates between " + str(start) + ' and ' + str(end)),
-        yaxis_title = "Percentage Returns (%)",
-        # legend_title = "Legend",
-        legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=1.02,
-        xanchor="right",
-        x=0.9)
-        )
+        yaxis_title = "Percentage Returns (%)")
+
 comparison_pricing_plot.update_yaxes(rangemode='tozero', constraintoward='bottom')
 st.plotly_chart(comparison_pricing_plot, use_container_width = True)
 
