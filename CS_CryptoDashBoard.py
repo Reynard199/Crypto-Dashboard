@@ -170,8 +170,12 @@ with st.expander('Reveal the Guidelines on Dates', expanded = True) :
 col_1, col_2= st.columns(2)
 with col_1 :
     start_date = st.date_input("Start Time", value = datetime.datetime.now(tz = tz) - datetime.timedelta(days = 1), min_value = datetime.datetime(2015,1,1), max_value = datetime.datetime.now())
+    if (start_date + datetime.timedelta(days = 7)) > datetime.date.today() :
+        max_value_determined = datetime.datetime.now()
+    else :
+        max_value_determined = start_date + datetime.timedelta(days = 7)
 with col_2 :
-    end_date = st.date_input("End Time", value = datetime.datetime.now(), max_value = start_date + datetime.timedelta(days = 7), min_value = start_date + datetime.timedelta(days = 1))
+    end_date = st.date_input("End Time", value = datetime.datetime.now(), max_value = max_value_determined, min_value = start_date + datetime.timedelta(days = 1))
 
 ticker_str = ""
 for k in ticker :
