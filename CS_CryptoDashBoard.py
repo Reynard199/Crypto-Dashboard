@@ -148,6 +148,7 @@ for i in ticker :
 
     
 comparison_pricing_plot.update_layout(
+        title = ("The Daily Returns Data for " + crypto_name + " and " + ticker_title),
         plot_bgcolor = 'rgba(1,1,1,1)',
         title_x = 0.5,
         xaxis_title = ("Dates between " + str(start) + ' and ' + str(end)),
