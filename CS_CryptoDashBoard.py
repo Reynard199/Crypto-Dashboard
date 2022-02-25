@@ -164,7 +164,7 @@ with st.expander('Commentary on the Returns of each crypto as well as some equit
     st.write("I would recommend hiding DOGE-USD (when using long periods of comparison data) for the time being due to its weird (but correct and accurate) return statistic")
     
 st.subheader('Secondly is the Historical Data of ' + crypto_name + ' in Minutes.')
-st.write('Please be kind to this section of the app - the work around the dates ranges is in heavy beta')
+st.write('Please be kind to this section of the app - the work around the dates ranges is in HEAVY development Beta.')
 with st.expander('Reveal the Guidelines on Dates', expanded = False) :
     st.write('Data returned in 1 minute intervals can only be called for a time frame of 1 week.')
 
