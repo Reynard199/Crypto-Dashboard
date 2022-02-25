@@ -8,15 +8,17 @@ import datetime
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 import plotly.express as px
-from PIL import Image
 from fear_greed_index.CNNFearAndGreedIndex import CNNFearAndGreedIndex
 import yfinance as yf
 import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
-# import streamlit.components.v1 as components
+import pytz
 
 st.set_page_config(layout = 'wide', initial_sidebar_state = 'expanded', page_title = "Dan's Shitty Crypto Dashboard", page_icon = "https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/Photos/Pizza%20Angel%20Icon.jpg")
+
+# setting a timezone for the app
+tz = pytz.timezone('Africa/Johannesburg')
 
 col_1, col_2= st.columns(2)
 
@@ -124,6 +126,7 @@ fig = go.Figure(
 st.markdown("***")
 
 st.header('Return Comparisons between ' + crypto_name + ' and Other S&P500 Stock')
+st.subheader("First is the Historical Data of the " + crypto_name + ' in Days')
 def comparison_pricing(ticker) :
     comparison_pricing_df = pd.DataFrame()
     for i in ticker :
@@ -132,7 +135,6 @@ def comparison_pricing(ticker) :
 
 comparison_pricing_df = comparison_pricing(ticker)
 comparison_pricing_df[symbol] = df['Adj Close']
-# comparison_pricing_df.apply(pd.Series.first_valid_index)
 comparison_returns = pd.DataFrame()
 ticker_title = ""
 comparison_pricing_plot = make_subplots(specs=[[{"secondary_y": True}]])
@@ -159,10 +161,40 @@ comparison_pricing_plot.update_yaxes(rangemode='tozero', constraintoward='bottom
 st.plotly_chart(comparison_pricing_plot, use_container_width = True)
 
 with st.expander('Commentary on the Returns of each crypto as well as some equity :', expanded = False) :
-    # st.write('The Returns on DOGE-USD is no mistake - the first day that it traded on Yahoo Finance, the price was small that the returns have been disorted heavily. \
-    #         The Initial Price of DOGE-USD was = $' + str(comparison_pricing_df['DOGE-USD'][0] + ' and now has a pricing of = $' + str(comparison_pricing_df['DOGE-USD'][-1])))
     st.write("I would recommend hiding DOGE-USD (when using long periods of comparison data) for the time being due to its weird (but correct and accurate) return statistic")
     
+st.subheader('Secondly is the Historical Data of ' + crypto_name + ' in Minutes.')
+with st.expander('Reveal the Guidelines on Dates', expanded = True) :
+    st.write('Data returned in 1 minute intervals can only be called for a time frame of 1 week.')
+
+col_1, col_2= st.columns(2)
+with col_1 :
+    start_date = st.date_input("Start Time", value = datetime.datetime.now(tz = tz) - datetime.timedelta(days = 1), min_value = datetime.datetime(2015,1,1), max_value = datetime.datetime.now())
+with col_2 :
+    end_date = st.date_input("End Time", value = datetime.datetime.now(), max_value = start_date + datetime.timedelta(days = 7), min_value = start_date + datetime.timedelta(days = 1))
+
+ticker_str = ""
+for k in ticker :
+    ticker_str += str(k)
+    ticker_str += ' '
+short_data = yf.download(ticker_str, start = start_date, end = end_date, interval = "1m")['Close']
+short_data_returns = pd.DataFrame()
+short_data_returns_plot = go.Figure()
+for i in ticker :
+    short_data_returns[i] = (short_data[i] / short_data[i].loc[short_data[i].first_valid_index()] - 1) * 100
+    # beginning_seconds, ending_seconds = st.slider('Select a time length to be displayed (in minutes)', value = short_data_returns.index[-60], min_value = short_data_returns.index[0], max_value = short_data_returns.index[-1], step = datetime.timedelta(minutes = 60))
+    short_data_returns_plot.add_trace(
+    go.Scatter(x = short_data_returns.index, y = short_data_returns[i], mode = 'lines', connectgaps = True, name = i),
+    )
+short_data_returns_plot.update_layout(
+    title = ("The 1 Minute Returns Data for " + crypto_name + " and Comparison Instruments"),
+    plot_bgcolor = 'rgba(1,1,1,1)',
+    title_x = 0.5,
+    xaxis_title = ("Dates between " + str(start) + ' and ' + str(end)),
+    yaxis_title = "Percentage Returns (%)",
+    legend_title = 'Ticker Legend')
+st.plotly_chart(short_data_returns_plot, use_container_width = True)
+
 st.markdown('---')
 
 def color_df(val):
