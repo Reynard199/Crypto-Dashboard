@@ -51,9 +51,9 @@ def get_input():
     end_date = st.sidebar.date_input("End Date", value = datetime.date.today(), max_value = datetime.date.today(), min_value = start_date + datetime.timedelta(days = 7))
     selected_stock = st.sidebar.text_input('Select a Ticker as per the Yahoo Finance Ticker Format (ABG.JO is ABSA)', 'ABG.JO').upper()
     ticker_list = pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')[0]['Symbol'][1:-1]
-    ticker_list = ticker_list.append(pd.Series(['^GSPC', 'ETH-USD', 'DOGE-USD', 'BTC-USD', '^J203.JO', 'CL-F', 'GC-F', selected_stock]))
+    ticker_list = ticker_list.append(pd.Series(['^GSPC', 'ETH-USD', 'DOGE-USD', 'BTC-USD', '^J203.JO', 'CL=F', 'GC=F', selected_stock]))
     ticker_list = ticker_list.unique()
-    ticker = st.sidebar.multiselect('Selection of Ticker Prices', options = ticker_list, default = ['BTC-USD', 'ETH-USD', 'DOGE-USD', '^GSPC', 'CL-F', 'GC-F', selected_stock])
+    ticker = st.sidebar.multiselect('Selection of Ticker Prices', options = ticker_list, default = ['BTC-USD', 'ETH-USD', 'DOGE-USD', '^GSPC', 'CL=F', 'GC=F', selected_stock])
     if ((end_date - start_date).days) > 120 :
                x = 120
     else : x = ((end_date - start_date).days)
