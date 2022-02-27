@@ -130,7 +130,7 @@ st.subheader("First is the Historical Data of the " + crypto_name + ' in Days')
 def comparison_pricing(ticker) :
     comparison_pricing_df = pd.DataFrame()
     for i in ticker :
-        comparison_pricing_df[i] = web.DataReader(i, 'yahoo', start = start, end = end)['Close']
+        comparison_pricing_df[i] = web.DataReader(i, data_source = 'yahoo', start = start, end = end)['Close']
     return comparison_pricing_df
 
 comparison_pricing_df = comparison_pricing(ticker)
