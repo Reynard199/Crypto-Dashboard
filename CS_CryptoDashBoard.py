@@ -148,7 +148,7 @@ ticker_title = ""
 comparison_pricing_plot = make_subplots(specs=[[{"secondary_y": True}]])
 for i in ticker :
     comparison_returns[i] = (comparison_pricing_df[i] / comparison_pricing_df[i].loc[comparison_pricing_df[i].first_valid_index()] - 1) * 100
-    if comparison_returns[i].max() > 10000 :
+    if comparison_returns[i].max() > 1000 :
         comparison_pricing_plot.add_trace(
             go.Scatter(x = comparison_returns[i].index, y = comparison_returns[i], mode = 'lines', connectgaps = True, name = i),
             secondary_y=True)
@@ -178,7 +178,7 @@ with st.expander('Reveal the Guidelines on Dates', expanded = False) :
 
 col_1, col_2= st.columns(2)
 with col_1 :
-    start_date = st.date_input("Start Time", value = datetime.datetime.now(tz = tz) - datetime.timedelta(days = 1), min_value = datetime.datetime(2015,1,1), max_value = datetime.datetime.now())
+    start_date = st.date_input("Start Time", value = datetime.datetime.now(tz = tz) - datetime.timedelta(days = 1), min_value = datetime.date.today() - datetime.timedelta(days = 7), max_value = datetime.date.today() - datetime.timedelta(days = 1))
     if (start_date + datetime.timedelta(days = 7)) > datetime.date.today() :
         max_value_determined = datetime.datetime.now()
     else :
@@ -226,25 +226,20 @@ with st.expander('Click to Reveal ' + crypto_name + ' Volume', expanded = False)
 st.markdown("---")
 
 st.header('Return Correlation Matrix and Heatmap of ' + crypto_name)
-st.subheader('Daily Data')
+
 col_1, col_2 = st.columns(2)
 with col_1 :
+    st.subheader('Daily Data')
     comparison_returns_corr = comparison_returns.corr()
     comparison_returns_corr_plot, ax = plt.subplots()
-    sns.heatmap(comparison_returns_corr, ax=ax, cmap="Reds")
+    sns.heatmap(comparison_returns_corr, ax=ax, cmap="Reds", annot = True)
     st.write(comparison_returns_corr_plot)
 with col_2 :
-    st.table(comparison_returns_corr)
-
-st.subheader('Minute Data')
-col_1, col_2 = st.columns(2)
-with col_1 :
+    st.subheader('Minute Data')
     short_data_returns_corr = short_data_returns.corr()
     short_data_returns_corr_plot, ax = plt.subplots()
-    sns.heatmap(short_data_returns_corr_plot, ax=ax, cmap="Reds")
+    sns.heatmap(short_data_returns_corr, ax=ax, cmap="Blues", annot = True)
     st.write(short_data_returns_corr_plot)
-with col_2 :
-    st.table(short_data_returns_corr)
     
 st.markdown("***")
 
@@ -352,7 +347,7 @@ with st.container() :
         profit = round(sum(np.array(-trading_df[trading_df['Position'] > 0]['Buy'])) + sum(np.array(trading_df[trading_df['Position'] < 0]['Sell'])), 3)
         
         initial_price = round(trading_df[trading_df["Buy"] > 0]['Buy'][0],3)
-        performance_df = pd.DataFrame({'Period' : [moving_averages], 'Unrealised Gain on Open Position' : [open_position], 'Profit ($)' : [profit], "Rough Amount Spent ($)" : [initial_price], 'Rough Return (%)' : [profit / initial_price * 100]})
+        performance_df = pd.DataFrame({'Period' : [moving_averages], 'Unrealised Gain on Open Position' : [open_position], 'Profit / Loss ($)' : [profit], 'Total Profit / Loss ($)' : [(profit + open_position)], "Rough Amount Spent ($)" : [initial_price], 'Rough Return (%)' : [profit / initial_price * 100]})
         
         fig = go.Figure()
         fig.add_trace(go.Scatter(x = df['Date'], y = trading_df['SMA'], mode = 'lines', line=dict(color='red', width=2), name = 'SMA', opacity = 0.5))
@@ -378,14 +373,14 @@ with st.container() :
         st.plotly_chart(fig, use_container_width = True)
         
         def color_df(val):
-            if val > 0:
+            if val >= 0:
                 color = 'green'
             else :
                 color = 'red'
             return 'color: %s' % color
         
         st.subheader('Performance Metrics')
-        st.table(performance_df.style.applymap(color_df, subset = ['Profit ($)', 'Rough Return (%)']).hide_index())
+        st.table(performance_df.style.applymap(color_df, subset = ['Profit / Loss ($)', 'Rough Return (%)', 'Unrealised Gain on Open Position', 'Total Profit / Loss ($)']).hide_index())
         
         with st.expander('Click to Reveal the Transaction Data', expanded = False) :
             
