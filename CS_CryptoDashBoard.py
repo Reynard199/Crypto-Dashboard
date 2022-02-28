@@ -226,7 +226,8 @@ with st.expander('Click to Reveal ' + crypto_name + ' Volume', expanded = False)
 st.markdown("---")
 
 st.header('Return Correlation Matrix and Heatmap of ' + crypto_name)
-col_1,col_2 = st.columns(2)
+st.subheader('Daily Data')
+col_1, col_2 = st.columns(2)
 with col_1 :
     comparison_returns_corr = comparison_returns.corr()
     comparison_returns_corr_plot, ax = plt.subplots()
@@ -235,6 +236,16 @@ with col_1 :
 with col_2 :
     st.table(comparison_returns_corr)
 
+st.subheader('Minute Data')
+col_1, col_2 = st.columns(2)
+with col_1 :
+    short_data_returns_corr = short_data_returns.corr()
+    short_data_returns_corr_plot, ax = plt.subplots()
+    sns.heatmap(short_data_returns_corr_plot, ax=ax, cmap="Reds")
+    st.write(short_data_returns_corr_plot)
+with col_2 :
+    st.table(short_data_returns_corr)
+    
 st.markdown("***")
 
 st.header(crypto_name + ' Closing Price Statistics for ' + str(datetime.date.strftime(start, '%d %B %Y') + ' to ' + str(datetime.date.strftime(end, '%d %B %Y'))))
