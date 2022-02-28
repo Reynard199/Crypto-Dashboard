@@ -44,7 +44,7 @@ with col_2 :
 st.sidebar.header("*Control Panel*")
 
 def get_input():
-    crypto_symbol = st.sidebar.selectbox('Crypto Coin', options = ['BTC-USD', 'DOGE-USD', 'ETH-USD'])
+    crypto_symbol = st.sidebar.selectbox('Crypto Coin or Commodity', options = ['BTC-USD', 'DOGE-USD', 'ETH-USD', 'GC=F', 'CL=F'])
     with st.sidebar.expander('Note about Date Selection', expanded = False) :
         st.write('Some of the tickers have different dates when they where created, so please use an ending value later than 1 Jan 2018. Otherwise it breaks the dash. Thanks!')
     start_date = st.sidebar.date_input("Start Date", value = datetime.date(2021,1,1), max_value = (datetime.date.today() - datetime.timedelta(days = 1)), min_value = datetime.date(2015,1,1))
