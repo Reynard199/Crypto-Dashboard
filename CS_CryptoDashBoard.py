@@ -30,7 +30,7 @@ with col_1 :
 
 with col_2 :
     st.write("""
-        # Pizza Angel's Crypto DashBoard
+        # Pizza Angel's Crypto and Commodity DashBoard
         **Made for the Idiots, by an Idiot. Geniet.**
         """)
     with st.expander('Brief Overview : How to use dash', expanded = False) :
