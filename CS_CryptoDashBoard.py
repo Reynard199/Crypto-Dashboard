@@ -73,6 +73,10 @@ def get_crypto_name(symbol):
         return 'Ethereum'
     if symbol == "DOGE-USD" :
         return 'Dogecoin'
+    if symbol == 'GC=F' :
+        return 'Gold'
+    if symbol == 'CL=F' :
+        return 'Crude Oil'
     else :
         return "None"
 
@@ -87,6 +91,10 @@ def get_data(symbol, start_date, end_date) :
     elif symbol == "ETH-USD" :
         df = web.DataReader(name = symbol, data_source = 'yahoo', start = start_date, end = end_date)
     elif symbol == 'DOGE-USD' :
+        df = web.DataReader(name = symbol, data_source = 'yahoo', start = start_date, end = end_date)
+    elif symbol == 'CL=F' :
+        df = web.DataReader(name = symbol, data_source = 'yahoo', start = start_date, end = end_date)
+    elif symbol == 'GC=F' :
         df = web.DataReader(name = symbol, data_source = 'yahoo', start = start_date, end = end_date)
     else :
         df = pd.DataFrame(columns = ['Date', 'Close', 'Open', 'High', 'Low', 'Adj Close', 'Volume'])
