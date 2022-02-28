@@ -178,7 +178,7 @@ with st.expander('Reveal the Guidelines on Dates', expanded = False) :
 
 col_1, col_2= st.columns(2)
 with col_1 :
-    start_date = st.date_input("Start Time", value = datetime.datetime.now(tz = tz) - datetime.timedelta(days = 1), min_value = datetime.date.today() - datetime.timedelta(days = 7), max_value = datetime.date.today() - datetime.timedelta(days = 1))
+    start_date = st.date_input("Start Time", value = datetime.datetime.now(tz = tz) - datetime.timedelta(days = 4), min_value = datetime.date.today() - datetime.timedelta(days = 7), max_value = datetime.date.today() - datetime.timedelta(days = 1))
     if (start_date + datetime.timedelta(days = 7)) > datetime.date.today() :
         max_value_determined = datetime.datetime.now()
     else :
