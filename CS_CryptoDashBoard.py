@@ -347,7 +347,7 @@ with st.container() :
         profit = round(sum(np.array(-trading_df[trading_df['Position'] > 0]['Buy'])) + sum(np.array(trading_df[trading_df['Position'] < 0]['Sell'])), 3)
         
         initial_price = round(trading_df[trading_df["Buy"] > 0]['Buy'][0],3)
-        performance_df = pd.DataFrame({'Period' : [moving_averages], 'Unrealised Gain on Open Position' : [open_position], 'Profit / Loss ($)' : [profit], 'Total Profit / Loss ($)' : [(profit + open_position)], "Rough Amount Spent ($)" : [initial_price], 'Rough Return (%)' : [profit / initial_price * 100]})
+        performance_df = pd.DataFrame({'Period' : [moving_averages], 'Unrealised Gain on Open Position' : [open_position], 'Profit / Loss ($)' : [profit], 'Total Profit / Loss ($)' : [(profit + open_position)], "Rough Amount Spent ($)" : [initial_price], 'Rough Return (%)' : [(profit+open_position) / initial_price * 100]})
         
         fig = go.Figure()
         fig.add_trace(go.Scatter(x = df['Date'], y = trading_df['SMA'], mode = 'lines', line=dict(color='red', width=2), name = 'SMA', opacity = 0.5))
