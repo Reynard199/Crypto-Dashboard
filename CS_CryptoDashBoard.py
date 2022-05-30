@@ -306,8 +306,8 @@ st.markdown('---')
 
 # st.markdown('---')
 
-st.header(crypto_name + " CandleStick Chart for " + str(datetime.date.strftime(start, '%d %B %Y') + " to " + str(datetime.date.strftime(end, '%d %B %Y'))))
-candle_stick = st.plotly_chart(fig, use_container_width=True)
+# st.header(crypto_name + " CandleStick Chart for " + str(datetime.date.strftime(start, '%d %B %Y') + " to " + str(datetime.date.strftime(end, '%d %B %Y'))))
+# candle_stick = st.plotly_chart(fig, use_container_width=True)
 
 st.markdown("---")
 st.header(crypto_name + ' : Basic "Technical" Trading')
