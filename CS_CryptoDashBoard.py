@@ -24,7 +24,7 @@ col_1, col_2= st.columns(2)
 
 with col_1 :
     st.image(
-        "https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/Photos/Pizza%20Angel%20Icon.jpg",
+        "https://raw.githubusercontent.com/Reynard199/Crypto-Dashboard/main/Photos/Pizza%20Angel%20Icon.jpg",
         use_column_width = True,
         )
 
@@ -271,14 +271,14 @@ conditions = [
     (df['Daily Returns (%)'] > 0) & (df['Daily Returns (%)'] <= 3),
     (df['Daily Returns (%)'] > 3)
     ]
-values = ['Fuck', 'Oh Shit', 'It Is What It Is', "We'll Take It", 'I <3 Cryptos']
+values = ['Dammit', 'OH NO!', 'It Is What It Is', "We'll Take It", 'I <3 Cryptos']
 df['Commentary'] = np.select(conditions, values)
 for i in selected_year : 
     return_stats_plot = px.histogram(df[df['Year'] == int(i)],
                     x = 'Daily Returns (%)', 
                     color = 'Commentary', 
                     nbins = 100,
-                    category_orders = dict({"Commentary" : ['Fuck', 'Oh Shit', 'It Is What It Is', "We'll Take It", 'I <3 Cryptos']}),
+                    category_orders = dict({"Commentary" : ['Dammit', 'OH NO!', 'It Is What It Is', "We'll Take It", 'I <3 Cryptos']}),
                     color_discrete_sequence=["red", "orange", "yellow", "blue", "green"])
     return_stats_plot.update_layout(
             plot_bgcolor = 'rgba(1,1,1,1)',
