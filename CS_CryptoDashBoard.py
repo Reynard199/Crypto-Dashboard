@@ -15,7 +15,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pytz
 
-st.set_page_config(layout = 'wide', initial_sidebar_state = 'expanded', page_title = "Dan's Shitty Crypto Dashboard", page_icon = "https://raw.githubusercontent.com/Reynard199/Shit-Crypto-Dashboard/main/Photos/Pizza%20Angel%20Icon.jpg")
+st.set_page_config(layout = 'wide', initial_sidebar_state = 'expanded', page_title = "Dan's Crypto Dashboard", page_icon = "https://raw.githubusercontent.com/Reynard199/Crypto-Dashboard/main/Photos/Pizza%20Angel%20Icon.jpg")
 
 # setting a timezone for the app
 tz = pytz.timezone('Africa/Johannesburg')
